@@ -20,3 +20,6 @@ _site
 
 # Jupyter cache
 .jupyter_cache
+
+# mac
+.DS_Store
