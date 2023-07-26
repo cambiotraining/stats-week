@@ -16,7 +16,7 @@ project:
 format: courseformat-html
 
 execute:
-  freeze: true
+  freeze: auto
 
 knitr:
   opts_knit:
@@ -46,7 +46,7 @@ book:
       - icon: twitter
         href: https://twitter.com/bioinfocambs
         aria-label: Bioinformatics Training Facility Twitter
-    title: "Course Development Guidelines"
+    title: "Statistical analysis and experimental design masterclass"
   chapters:
     - part: "Welcome"
       chapters:

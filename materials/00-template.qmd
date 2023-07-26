@@ -1,0 +1,42 @@
+---
+title: Template Page
+---
+
+::: {.callout-tip}
+#### Learning Objectives
+
+- Bulleted list of learning objectives
+:::
+
+
+## Section
+
+Headings for material sections start at level 2. 
+
+More guidelines for content available here: https://cambiotraining.github.io/quarto-course-template/materials/02-content_guidelines.html
+
+
+## Assessing significance
+
+::: {.panel-tabset group="language"}
+## R
+## Python
+:::
+
+
+## Exercise
+
+::: {.callout-tip collapse="true"}
+## Answer
+::: {.panel-tabset group="language"}
+## R
+## Python
+:::
+:::
+
+## Key points
+
+::: {.callout-note}
+-   We use a logistic regression to model a binary response
+-   We can feed new observations into the model and get probabilities for the outcome
+:::

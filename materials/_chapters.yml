@@ -1,5 +1,9 @@
 book:
   chapters:
-    - part: "Introduction"
+    - part: "Day 1"
       chapters:
-        - materials/00-template.md
+        - materials/research-questions.qmd
+        - materials/cs1_practical_one-sample.qmd
+        - materials/cs1_practical_two-samples.qmd
+        - materials/cs1_practical_two-samples-paired.qmd
+        
