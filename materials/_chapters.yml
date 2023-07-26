@@ -1,11 +1,23 @@
 book:
   chapters:
-    - part: "Day 1"
+    - part: "Statistical inference"
       chapters:
         - materials/research-questions.qmd
         - materials/cs1_practical_one-sample.qmd
         - materials/cs1_practical_two-samples.qmd
         - materials/cs1_practical_two-samples-paired.qmd
+    - part: "Considering variables"
+    - part: "Categorical predictors"
+      chapters:
         - materials/cs2_practical_anova.qmd
         - materials/cs2_practical_kruskal-wallis.qmd
-        
+    - part: "Continuous predictors"
+      chapters:
+        - materials/cs3_practical_linear-regression.qmd
+        - materials/cs3_practical_correlations.qmd
+    - part: "Two predictors"
+    - part: "Multiple predictors"
+    - part: "Reconsidering variables"
+    - part: "Statistical power"
+    - part: "Extending the linear model"
+    - part: "Case studies"

@@ -709,7 +709,7 @@ Is there any evidence that diet affects the growth rate of lobsters?
 6.  Write down a sentence that summarises the results that you have found
 7.  Perform a post-hoc test and report the findings
 
-::: {.callout-answer collapse=true}
+::: {.callout-answer collapse="true"}
 ## Answer
 
 #### Hypotheses
