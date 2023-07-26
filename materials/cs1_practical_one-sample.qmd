@@ -670,7 +670,7 @@ The above sentence is an adequate concluding statement for this test and is what
 
 ### Gastric juices {#sec-exr_gastric}
 
-::: callout-exercise
+:::{.callout-exercise}
 {{< level 2 >}}
 
 The following data are the dissolving times (in seconds) of a drug in agitated gastric juice:

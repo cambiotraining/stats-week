@@ -6,4 +6,6 @@ book:
         - materials/cs1_practical_one-sample.qmd
         - materials/cs1_practical_two-samples.qmd
         - materials/cs1_practical_two-samples-paired.qmd
+        - materials/cs2_practical_anova.qmd
+        - materials/cs2_practical_kruskal-wallis.qmd
         
