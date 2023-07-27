@@ -6,7 +6,7 @@ book:
         - materials/cs1_practical_one-sample.qmd
         - materials/cs1_practical_two-samples.qmd
         - materials/cs1_practical_two-samples-paired.qmd
-    - part: "Considering variables"
+    - part: "Variables & distributions"
     - part: "Categorical predictors"
       chapters:
         - materials/cs2_practical_anova.qmd
@@ -16,6 +16,9 @@ book:
         - materials/cs3_practical_linear-regression.qmd
         - materials/cs3_practical_correlations.qmd
     - part: "Two predictors"
+      chapters:
+        - materials/cs4_practical_two-way-anova.qmd
+        #- materials/cs4_practical_linear-regression-grouped-data.qmd
     - part: "Multiple predictors"
     - part: "Reconsidering variables"
     - part: "Statistical power"

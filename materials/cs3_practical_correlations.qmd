@@ -394,7 +394,7 @@ USAstate <- read_csv("data/CS3-statedata.csv")
 USAstate
 ```
 
-The code below may look a bit daunting, but it basically repeats what we've done previously:
+We basically repeat what we've done previously:
 
 ```{r}
 USAstate_pear <-USAstate %>% 
