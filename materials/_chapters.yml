@@ -18,7 +18,7 @@ book:
     - part: "Two predictors"
       chapters:
         - materials/cs4_practical_two-way-anova.qmd
-        #- materials/cs4_practical_linear-regression-grouped-data.qmd
+        - materials/cs4_practical_linear-regression-grouped-data.qmd
     - part: "Multiple predictors"
     - part: "Reconsidering variables"
     - part: "Statistical power"
