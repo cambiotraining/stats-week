@@ -20,6 +20,8 @@ book:
         - materials/cs4_practical_two-way-anova.qmd
         - materials/cs4_practical_linear-regression-grouped-data.qmd
     - part: "Multiple predictors"
+      chapters:
+        - materials/cs5_practical_multiple-linear-regression.qmd
     - part: "Reconsidering variables"
     - part: "Statistical power"
     - part: "Extending the linear model"
