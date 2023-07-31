@@ -189,7 +189,7 @@ So in this case we create a model that takes into account all of the main effect
 
 Our model is then as follows:
 
-`pm2_5 ~ avg_temp, location + rain_mm + wind_m_s + wind_m_s:location`
+`pm2_5 ~ avg_temp + location + rain_mm + wind_m_s + wind_m_s:location`
 
 So let's define and explore it!
 
