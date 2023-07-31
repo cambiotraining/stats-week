@@ -707,24 +707,28 @@ Note: have a look at the data and make sure that they are in the correct format!
 
 #### Load the data
 
-In this data set the watering regime (`water`) and shading regime (`shade`) are encoded with numerical values. However, these numbers are actually categories, representing the amount of water/shade.
-
-As such, we don't want to treat these as numbers but as _factors_. We can convert the columns using the `as_factor()` function. Because we'd like to keep referring to these columns as factors, we will update our existing data set.
-
 ```{r}
 # read in the data
 tulip <- read_csv("data/CS4-tulip.csv")
 
 # have a quick look at the data
 tulip
+```
 
+In this data set the watering regime (`water`) and shading regime (`shade`) are encoded with numerical values. However, these numbers are actually categories, representing the amount of water/shade.
+
+As such, we don't want to treat these as numbers but as _factors_. At the moment they are numbers, which we can tell with `<dbl>`, which stands for `double`. 
+
+We can convert the columns using the `as_factor()` function. Because we'd like to keep referring to these columns as factors, we will update our existing data set.
+
+``` {r}
 # convert watering and shade regimes to factor
 tulip <- tulip %>% 
   mutate(water = as_factor(water),
          shade = as_factor(shade))
 ```
 
-This dataset has three variables; `blooms` (which is the response variable) and `water` and `shade` (which are the two potential predictor variables). 
+This data set has three variables; `blooms` (which is the response variable) and `water` and `shade` (which are the two potential predictor variables). 
 
 #### Visualise the data
 
@@ -802,23 +806,25 @@ So we do appear to have a significant interaction between `water` and `shade` as
 
 #### Load the data
 
-In this data set the watering regime (`water`) and shading regime (`shade`) are encoded with numerical values. However, these numbers are actually categories, representing the amount of water/shade.
-
-As such, we don't want to treat these as numbers but as _factors_. We can convert the columns using the `as_factor()` function. Because we'd like to keep referring to these columns as factors, we will update our existing data set.
-
 ```{python}
 # read in the data
 tulip_py = pd.read_csv("data/CS4-tulip.csv")
 
 # have a quick look at the data
 tulip_py.head()
+```
 
+In this data set the watering regime (`water`) and shading regime (`shade`) are encoded with numerical values. However, these numbers are actually categories, representing the amount of water/shade.
+
+As such, we don't want to treat these as numbers but as *factors*. We can convert the columns using `astype(object)`. Because we'd like to keep referring to these columns as factors, we will update our existing data set.
+
+```{python}
 # convert watering and shade regimes to factor
 tulip_py['water'] = tulip_py['water'].astype(object)
 tulip_py['shade'] = tulip_py['shade'].astype(object)
 ```
 
-This dataset has three variables; `blooms` (which is the response variable) and `water` and `shade` (which are the two potential predictor variables). 
+This data set has three variables; `blooms` (which is the response variable) and `water` and `shade` (which are the two potential predictor variables). 
 
 #### Visualise the data
 

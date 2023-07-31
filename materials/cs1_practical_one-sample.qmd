@@ -539,7 +539,9 @@ Additional information, such as the test statistic and degrees of freedom, are s
 
 ## Dealing with non-normal data
 
-Your data might not always be normally distributed. That's not a huge issue and there are statistical tests that can deal with this. For a one-sample data set there is the Wilcoxon signed rank test. This test, in contrast to the one-sample t-test does not assume that the parent distribution is normally distributed. We do still need the parent distribution (and consequently the sample) to be the same shape and scale. Using this test we look to see if the *median* of the parent distributions differs significantly from a given hypothesised value (in contrast with the t-test that looks at the *mean*).
+Your data might not always be normally distributed. That's not a huge issue and there are statistical tests that can deal with this. For a one-sample data set there is the Wilcoxon signed rank test. This test, in contrast to the one-sample t-test does not assume that the parent distribution is normally distributed. We do still need the parent distribution (and consequently the sample) to be the same shape and scale.
+
+The Wilcoxon signed rank test checks if the rank-transformed values are symmetric around the median. As such, using this test we look to see if the *median* of the parent distributions differs significantly from a given hypothesised value (in contrast with the t-test that looks at the *mean*).
 
 ### Data and hypotheses
 

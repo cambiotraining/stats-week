@@ -574,6 +574,17 @@ There are two questions you might now ask (if you’re still following all of th
 2. why is this so complicated, why isn’t there just a single function that just does this, and just tells me how many observations I need?
     * Very good question – I have no answer to that sorry – sometimes life is just hard.
 
+
+::: .{callout-note}
+## R-squared and eta-squared
+
+Like we've seen before in the previous sessions, the $R^2$ value can give us an indication of how much of the variance is explained by our model.
+
+Sometimes you also come across $\eta^2$. What that does is that it partitions $R^2$ across the predictors. This means that $\eta^2$ represents how much variance is explained by each of the predictors. If you have multiple predictors, then you would get multiple values.
+
+In the case where there is *one* predictor, $R^2 = \eta^2$.
+:::
+
 ## Exercises
 
 ### Power: one-sample {#sec-exr_pwronesample}
@@ -843,8 +854,9 @@ mussels <- read_csv("data/CS6-shelllength.csv")
 ```
 
 ```{r}
-ggplot(mussels, aes(x = location,
-                    y = length)) +
+ggplot(mussels,
+       aes(x = location,
+           y = length)) +
     geom_boxplot()
 ```
 
@@ -856,8 +868,9 @@ mussels_py = pd.read_csv("data/CS6-shelllength.csv")
 
 ```{python}
 #| results: hide
-(ggplot(mussels_py, aes(x = "location",
-                        y = "length")) +
+(ggplot(mussels_py,
+        aes(x = "location",
+            y = "length")) +
     geom_boxplot())
 ```
 
@@ -1117,7 +1130,9 @@ b. How big a study would we need to detect a medium effect size (according to Co
 ::: {.callout-answer collapse="true"}
 ## Answer
 
-Here we have a system with a single response variable, and three categorical predictor variables. One of them is `gender`, with two possible levels (M, F). One of them is `treatment`, again with two possible levels (Drug, placebo) and one of them is continuous (`age`). A linear model with all possible two-way interactions would look something like this:
+Here we have a system with a single response variable, and three predictor variables. One of them is `gender`, a categorical predictor with two possible levels (M, F). One of them is `treatment`, again a categorical predictor with two possible levels (Drug, placebo) and one of them is continuous (`age`). The last one could even be viewed as a categorical predictor, where each year is a category. If we would like to model `age` as such, then we'd have to define it as a factor. We're not doing this here.
+
+A linear model with all possible two-way interactions would look something like this:
 
 `response ~ treatment + gender + age + treatment:gender + treatment:age + age:gender`
 

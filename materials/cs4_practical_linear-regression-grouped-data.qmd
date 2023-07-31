@@ -741,7 +741,9 @@ ggplot(clover,
   scale_color_brewer(palette = "Dark2")
 ```
 
-The regression lines are very close together, and it looks very much as if there isn't any interaction, but also that there isn't any effect of `farm`. Let's carry out the analysis:
+The regression lines are very close together. Although the line for `Farm C` crosses the other two, it doesn't look like we're going to see a very strong interaction - if there is one. There doesn't seem to be an effect of `farm` in general, since the lines are not separate from each other. 
+
+Let's carry out the analysis:
 
 ```{r}
 lm_clover <- lm(yield ~ yarrow * farm,
@@ -800,7 +802,7 @@ Looking at this plot as it stands, it's pretty clear that yarrow density has a s
      scale_color_brewer(type = "qual", palette = "Dark2"))
 ```
 
-The regression lines are very close together, and it looks very much as if there isn't any interaction, but also that there isn't any effect of `farm`. 
+The regression lines are very close together. Although the line for `Farm C` crosses the other two, it doesn't look like we're going to see a very strong interaction - if there is one. There doesn't seem to be an effect of `farm` in general, since the lines are not separate from each other. 
 
 Let's carry out the analysis. First, we need to change the name of the `yield` column, because `yield` is a keyword in Python, and we can't use it inside the model formula. How annoying.
 

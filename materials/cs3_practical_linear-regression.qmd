@@ -192,7 +192,7 @@ In order for a linear regression analysis to be valid 4 key assumptions need to 
 ::: callout-important
 1.  The data must be linear (it is entirely possible to calculate a straight line through data that is not straight - it doesn't mean that you should!)
 2.  The residuals must be normally distributed
-3.  The residuals must not be correlated with their fitted values
+3.  The residuals must not be correlated with their fitted values (*i.e.* they should be independent)
 4.  The fit should not depend overly much on a single point (no point should have high leverage).
 :::
 
