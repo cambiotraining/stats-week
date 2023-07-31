@@ -318,7 +318,7 @@ When doing this in Python, you are a bit stuck. There does not seem to be an equ
 
 :::
 
-## Exercise
+## Exercises
 
 We are going to practice the backwards stepwise elimination technique on some of the data sets we analysed previously.
 
@@ -336,10 +336,16 @@ Perform a BSE on the following data sets:
 * `data/CS5-trees.csv`
 * `data/CS5-pm2_5.csv`
 
-::: {.callout-tip collapse="true"}
-## Answer
+### BSE: Trees {#sec-exr_bsetrees}
 
-### BSE on Trees
+:::{.callout-exercise}
+
+{{< level 2 >}}
+
+BSE on `trees`:
+
+::: {.callout-answer collapse="true"}
+## Answer
 
 Let's start by reading in the data and checking which variables are in the data set.
 
@@ -411,11 +417,19 @@ model_1.fit().aic
 :::
 
 This BSE approach only gets as far as the first step (trying to drop the interaction term). We see immediately that dropping the interaction term makes the model worse. This means that the best model is still the full model.
+:::
+:::
 
-### BSE on PM2.5
+### BSE: Air pollution {#sec-exr_bsepollution}
 
-Let's start by reading in the data and checking which variables are in the data set.
+:::{.callout-exercise}
 
+{{< level 2 >}}
+
+Perform a BSE on `pm2_5`. Let's start by reading in the data and checking which variables are in the data set.
+
+::: {.callout-answer collapse="true"}
+## Answer
 ::: {.panel-tabset group="language"}
 ## R
 
@@ -545,6 +559,7 @@ Our minimal model is thus:
 
 `pm2_5 ~ wind_m_s + location + wind_m_s:location`
 
+:::
 :::
 
 ## Key points

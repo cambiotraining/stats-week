@@ -25,5 +25,7 @@ book:
         - materials/cs5_practical_model-comparisons.qmd
     - part: "Reconsidering variables"
     - part: "Statistical power"
+      chapters:
+        - materials/cs6_practical_power-analysis.qmd
     - part: "Extending the linear model"
     - part: "Case studies"
