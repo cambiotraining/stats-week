@@ -12,8 +12,11 @@ project:
     - materials.md
     - materials/*
     - "!materials/*/no_render"
+    - references.qmd
 
 format: courseformat-html
+
+bibliography: references.bib
 
 execute:
   freeze: auto
@@ -54,4 +57,6 @@ book:
           href: index.md
         - text: "Data & Setup"
           href: setup.md
+        - text: "References"
+          href: references.qmd
     

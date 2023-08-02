@@ -28,4 +28,7 @@ book:
       chapters:
         - materials/cs6_practical_power-analysis.qmd
     - part: "Extending the linear model"
+      chapters:
+        - materials/glm-intro-lm.qmd
+        - materials/glm-intro-glm.qmd
     - part: "Case studies"
