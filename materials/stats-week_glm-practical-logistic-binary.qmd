@@ -1,0 +1,486 @@
+---
+title: "Binary response"
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| results: hide
+source(file = "setup_files/setup.R")
+```
+
+```{python}
+#| echo: false
+#| message: false
+import shutup;shutup.please()
+exec(open('setup_files/setup.py').read())
+```
+
+::: {.callout-tip}
+## Learning outcomes
+
+**Questions**
+
+-   How do we analyse data with a binary outcome?
+-   Can we test if our model is any good?
+-   Be able to perform a logistic regression with a binary outcome
+-   Predict outcomes of new data, based on a defined model
+
+**Objectives**
+
+- Be able to analyse binary outcome data
+- Understand different methods of testing model fit
+- Be able to make model predictions
+:::
+
+## Libraries and functions
+
+::: {.callout-note collapse="true"}
+## Click to expand
+
+::: {.panel-tabset group="language"}
+## R
+
+### Libraries
+### Functions
+
+## Python
+
+### Libraries
+
+```{python}
+#| eval: false
+# A maths library
+import math
+# A Python data analysis and manipulation tool
+import pandas as pd
+
+# Python equivalent of `ggplot2`
+from plotnine import *
+
+# Statistical models, conducting tests and statistical data exploration
+import statsmodels.api as sm
+
+# Convenience interface for specifying models using formula strings and DataFrames
+import statsmodels.formula.api as smf
+```
+
+### Functions
+:::
+:::
+
+The example in this section uses the following data set:
+
+`data/finches_early.csv`
+
+These data come from an analysis of gene flow across two finch species [@lamichhaney2020]. They are slightly adapted here for illustrative purposes.
+
+The data focus on two species, _Geospiza fortis_ and _G. scandens_. The original measurements are split by a uniquely timed event: a particularly strong El Niño event in 1983. This event changed the vegetation and food supply of the finches, allowing F1 hybrids of the two species to survive, whereas before 1983 they could not. The measurements are classed as `early` (pre-1983) and `late` (1983 onwards).
+
+Here we are looking only at the `early` data. We are specifically focussing on the beak shape classification, which we saw earlier in @fig-beak_shape_glm.
+
+## Load and visualise the data
+
+First we load the data, then we visualise it.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| message: false
+#| warning: false
+early_finches <- read_csv("data/finches_early.csv")
+```
+
+## Python
+
+```{python}
+early_finches_py = pd.read_csv("data/finches_early.csv")
+```
+
+:::
+
+Looking at the data, we can see that the `pointed_beak` column contains zeros and ones. These are actually yes/no classification outcomes and not numeric representations.
+
+We'll have to deal with this soon. For now, we can plot the data:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ggplot(early_finches,
+       aes(x = factor(pointed_beak),
+          y = blength)) +
+  geom_boxplot()
+```
+
+## Python
+
+We could just give Python the `pointed_beak` data directly, but then it would view the values as numeric. Which doesn't really work, because we have two groups as such: those with a pointed beak (`1`), and those with a blunt one (`0`).
+
+We can force Python to temporarily covert the data to a factor, by making the `pointed_beak` column an `object` type. We can do this directly inside the `ggplot()` function.
+
+```{python}
+#| results: hide
+(ggplot(early_finches_py,
+         aes(x = early_finches_py.pointed_beak.astype(object),
+             y = "blength")) +
+     geom_boxplot())
+```
+:::
+
+It looks as though the finches with blunt beaks generally have shorter beak lengths.
+
+We can visualise that differently by plotting all the data points as a classic binary response plot:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ggplot(early_finches,
+       aes(x = blength, y = pointed_beak)) +
+  geom_point()
+```
+
+## Python
+
+```{python}
+#| results: hide
+(ggplot(early_finches_py,
+         aes(x = "blength",
+             y = "pointed_beak")) +
+     geom_point())
+```
+
+:::
+
+This presents us with a bit of an issue. We could fit a linear regression model to these data, although we already know that this is a bad idea...
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| message: false
+ggplot(early_finches,
+       aes(x = blength, y = pointed_beak)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+## Python
+
+```{python}
+#| results: hide
+(ggplot(early_finches_py,
+         aes(x = "blength",
+             y = "pointed_beak")) +
+     geom_point() +
+     geom_smooth(method = "lm",
+                 colour = "blue",
+                 se = False))
+```
+
+:::
+
+Of course this is rubbish - we can't have a beak classification outside the range of $[0, 1]$. It's either blunt (`0`) or pointed (`1`).
+
+But for the sake of exploration, let's look at the assumptions:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| message: false
+lm_bks <- lm(pointed_beak ~ blength,
+             data = early_finches)
+
+resid_panel(lm_bks,
+            plots = c("resid", "qq", "ls", "cookd"),
+            smoother = TRUE)
+```
+
+## Python
+
+First, we create a linear model:
+
+```{python}
+# create a linear model
+model = smf.ols(formula= "pointed_beak ~ blength",
+                data = early_finches_py)
+# and get the fitted parameters of the model
+lm_bks_py = model.fit()
+```
+
+Next, we can create the diagnostic plots:
+```{python}
+#| eval: false
+dgplots(lm_bks_py)
+```
+
+```{python}
+#| echo: false
+# load dgplots function for knitr
+exec(open('setup_files/dgplots_knitr.py').read())
+# create rendered diagnostic plots image
+# and save the file link
+dgplot = dgplotsknitr(lm_bks_py)
+```
+
+```{r}
+#| echo: false
+library(reticulate)
+# display image
+knitr::include_graphics(py$dgplot)
+```
+
+:::
+
+They're ~~pretty~~ extremely bad.
+
+-   The response is not linear (Residual Plot, binary response plot, common sense).
+-   The residuals do not appear to be distributed normally (Q-Q Plot)
+-   The variance is not homogeneous across the predicted values (Location-Scale Plot)
+-   But - there is always a silver lining - we don't have influential data points.
+
+## Creating a suitable model
+
+So far we've established that using a simple linear model to describe a potential relationship between beak length and the probability of having a pointed beak is not a good idea. So, what _can_ we do?
+
+One of the ways we can deal with binary outcome data is by performing a logistic regression. Instead of fitting a straight line to our data, and performing a regression on that, we fit a line that has an S shape. This avoids the model making predictions outside the $[0, 1]$ range.
+
+There are many mathematical functions that produce S-shaped graphs. The **logistic function** is one of them and well-suited to these kind of data.
+
+In the most simple form a logistic function is written like this:
+
+$Y = \frac{\exp(X)}{1 + \exp(X)}$
+
+:::{.callout-note collapse=true}
+## Euler's number ($\exp$): would you like to know more?
+
+In mathematics, $\rm e$ represents a constant of around 2.718. Another notation is $\exp$, which is often used when notations become a bit cumbersome. Here, I exclusively use the $\exp$ notation for consistency.
+:::
+
+We can _generalise_ this, by writing it as follows:
+
+$Y = \frac{\exp(X)}{1 + \exp(\beta_0 + \beta_1X)}$
+
+Note that the $\beta_0 + \beta_1X$ part is identical to the formula of a straight line. We've come across this before when we were doing simple linear regression!
+
+The rest of the function is what makes the straight line curve into its characteristic S shape. We can fit such an S-shaped curve to our `early_finches` data set, by creating a generalised linear model.
+
+::: {.panel-tabset group="language"}
+## R
+
+In R we have a few options to do this, and by far the most familiar function would be `glm()`. Here we save the model in an object called `glm_bks`:
+
+```{r}
+glm_bks <- glm(pointed_beak ~ blength,
+               family = binomial,
+               data = early_finches)
+```
+
+The format of this function is similar to that used by the `lm()` function for linear models. The important difference is that we must specify the _family_ of error distribution to use. For logistic regression we must set the family to **binomial**.
+
+If you forget to set the `family` argument, then the `glm()` function will perform a standard linear model fit, identical to what the `lm()` function would do.
+
+## Python
+
+```{python}
+# create a linear model
+model = smf.glm(formula= "pointed_beak ~ blength",
+                family = sm.families.Binomial(),
+                data = early_finches_py)
+# and get the fitted parameters of the model
+glm_bks_py = model.fit()
+```
+
+:::
+
+## Model output
+
+That's the easy part done! The trickier part is interpreting the output. First of all, we'll get some summary information.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+summary(glm_bks)
+```
+
+
+## Python
+
+```{python}
+print(glm_bks_py.summary())
+```
+
+:::
+
+There’s a lot to unpack here, but for the purpose of today we are mostly focussing on the coefficients.
+
+::: {.panel-tabset group="language"}
+## R
+The coefficients can be found in the `Coefficients` block. The main numbers to extract from the output are the two numbers underneath `Estimate.Std`:
+
+```
+Coefficients:
+            Estimate Std.
+(Intercept)  -43.410
+blength        3.387 
+```
+
+## Python
+
+Right at the bottom is a table showing the model coefficients. The main numbers to extract from the output are the two numbers in the `coef` column:
+
+```
+======================
+                 coef
+----------------------
+Intercept    -43.4096
+blength        3.3866
+======================
+```
+
+:::
+
+These are the coefficients of the logistic model equation and need to be placed in the correct equation if we want to be able to actually calculate the probability of having a pointed beak for a given beak length.
+
+The $p$ values at the end of each coefficient row merely show whether that particular coefficient is significantly different from zero. This is similar to the $p$ values obtained in the summary output of a linear model. As with continuous predictors in simple models, these $p$ values can be used to decide whether that predictor is important (so in this case beak length appears to be significant). However, these $p$ values aren’t great to work with when we have multiple predictor variables, or when we have categorical predictors with multiple levels (since the output will give us a $p$ value for each level rather than for the predictor as a whole).
+
+We can use the coefficients to actually calculate the probability of having a pointed beak for a given beak length:
+
+$$ P(pointed \ beak) = \frac{\exp(-43.41 + 3.39 \times blength)}{1 + \exp(-43.41 + 3.39 \times blength)} $$
+
+Having this formula means that we can calculate the probability of having a pointed beak for any beak length. How do we work this out in practice? 
+
+::: {.panel-tabset group="language"}
+## R
+
+Well, the probability of having a pointed beak if the beak length is large (for example 15 mm) can be calculated as follows:
+
+```{r}
+exp(-43.41 + 3.39 * 15) / (1 + exp(-43.41 + 3.39 * 15))
+```
+
+If the beak length is small (for example 10 mm), the probability is extremely low:
+
+```{r}
+exp(-43.41 + 3.39 * 10) / (1 + exp(-43.41 + 3.39 * 10))
+```
+
+## Python
+Well, the probability of having a pointed beak if the beak length is large (for example 15 mm) can be calculated as follows:
+
+```{python}
+# import the math library
+import math
+```
+
+
+```{python}
+math.exp(-43.41 + 3.39 * 15) / (1 + math.exp(-43.41 + 3.39 * 15))
+```
+
+If the beak length is small (for example 10 mm), the probability is extremely low:
+
+```{python}
+math.exp(-43.41 + 3.39 * 10) / (1 + math.exp(-43.41 + 3.39 * 10))
+```
+:::
+
+We can actually calculate the the probabilities for all our observed values and if we do that then we can see that the larger the beak length is, the higher the probability that a beak shape would be pointed. I'm visualising this together with the logistic curve, where the blue points are the calculated probabilities:
+
+::: {.callout-note collapse=true}
+## Code available here
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| results: hide
+#| message: false
+#| fig-show: hide
+glm_bks %>% 
+  augment(type.predict = "response") %>% 
+  ggplot() +
+  geom_point(aes(x = blength, y = pointed_beak)) +
+  geom_line(aes(x = blength, y = .fitted),
+            linetype = "dashed",
+            colour = "blue") +
+  geom_point(aes(x = blength, y = .fitted),
+             colour = "blue", alpha = 0.5) +
+  labs(x = "beak length (mm)",
+       y = "Probability")
+```
+
+## Python
+
+```{python}
+#| results: hide
+#| fig-show: hide
+(ggplot(early_finches_py) +
+  geom_point(aes(x = "blength", y = "pointed_beak")) +
+  geom_line(aes(x = "blength", y = glm_bks_py.fittedvalues),
+            linetype = "dashed",
+            colour = "blue") +
+  geom_point(aes(x = "blength", y = glm_bks_py.fittedvalues),
+             colour = "blue", alpha = 0.5) +
+  labs(x = "beak length (mm)",
+       y = "Probability"))
+```
+:::
+:::
+
+```{r}
+#| echo: false
+#| message: false
+#| label: fig-beak_class_glm_probs
+#| fig-cap: "Predicted probabilities for beak classification"
+glm_bks %>% 
+  augment(type.predict = "response") %>% 
+  ggplot() +
+  geom_point(aes(x = blength, y = pointed_beak)) +
+  geom_line(aes(x = blength, y = .fitted),
+            linetype = "dashed",
+            colour = "blue") +
+  geom_point(aes(x = blength, y = .fitted),
+             colour = "blue", alpha = 0.5) +
+  labs(x = "beak length (mm)",
+       y = "Probability")
+```
+
+The graph shows us that, based on the data that we have and the model we used to make predictions about our response variable, the probability of seeing a pointed beak increases with beak length.
+
+Short beaks are more closely associated with the bluntly shaped beaks, whereas long beaks are more closely associated with the pointed shape. It's also clear that there is a range of beak lengths (around 13 mm) where the probability of getting one shape or another is much more even.
+
+There is an interesting genetic story behind all this, but that will be explained in more detail in the full-day [Generalised linear models](https://cambiotraining.github.io/stats-glm/) course.
+
+## Exercises
+
+### title {#sec-exr_title}
+
+:::{.callout-exercise}
+
+{{< level 2 >}}
+
+Exercise description
+
+::: {.callout-answer collapse="true"}
+## Answer
+
+::: {.panel-tabset group="language"}
+## R
+
+## Python
+
+:::
+:::
+:::
+
+## Key points
+
+::: {.callout-note}
+-   We use a logistic regression to model a binary response
+-   We can feed new observations into the model and get probabilities for the outcome
+:::

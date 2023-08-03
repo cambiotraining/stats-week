@@ -20,7 +20,7 @@ exec(open('setup_files/setup.py').read())
 #| message: false
 
 # required data sets
-finches <- read_csv("data/finch_beaks.csv")
+finches <- read_csv("data/finches_beaks.csv")
 
 fortis_1975 <- finches %>% filter(species == "fortis", year == 1975)
 ```
@@ -139,6 +139,10 @@ finches_2020 <- finches_2020 %>%
 early_finches <- finches_2020 %>% 
   filter(timepoint == "early") %>% 
   mutate(pointed_beak = if_else(str_detect(group, "blunt"), 0, 1))
+```
+
+```{r}
+write_csv(early_finches, file = "data/finches_early.csv")
 ```
 
 ```{r}
@@ -267,7 +271,7 @@ However, and similar to the standard linear model, there are two parts to each m
 1. the coefficients for each predictor (linking each parameter to a predictor)
 2. the error or random component (which specifies a probability distribution)
 
-Which link function you use depends on your analysis. Some common link functions and corresponding distributions are:
+Which link function you use depends on your analysis. Some common link functions and corresponding distributions are (adapted from [@glen2021]):
 
 | distribution | data type           | link name |
 |--------------|---------------------|-----------|

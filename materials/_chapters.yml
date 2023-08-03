@@ -31,4 +31,5 @@ book:
       chapters:
         - materials/glm-intro-lm.qmd
         - materials/glm-intro-glm.qmd
+        - materials/stats-week_glm-practical-logistic-binary.qmd
     - part: "Case studies"

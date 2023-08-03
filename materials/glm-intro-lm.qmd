@@ -22,7 +22,7 @@ For this example, we'll be using the `finches` data set.
 ```{r}
 #| echo: false
 #| message: false
-finches <- read_csv("data/finch_beaks.csv")
+finches <- read_csv("data/finches_beaks.csv")
 ```
 
 ## Exploring data
