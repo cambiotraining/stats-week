@@ -1,0 +1,350 @@
+---
+title: "Independence & replication"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| results: hide
+source(file = "setup_files/setup.R")
+```
+
+```{python}
+#| echo: false
+#| message: false
+import shutup;shutup.please()
+exec(open('setup_files/setup.py').read())
+```
+
+One of the key assumptions of a linear model is that all the observations or datapoints in your sample are independent of one another. This is an assumption that can be easy to forget about, because isn't something that we can check with diagnostic plots. Determining whether your data meet this assumption can also be surprisingly complicated - separating a biological replicate from a technical replicate, and figuring out the correct value of *n*, can take a bit of thought.
+
+There are a couple of example datasets here that you can work through, which will hopefully get you thinking about independence and natural clusters or groupings within datasets. Later in the course, we'll talk about an extension to the linear model that can be useful for dealing with this sort of structure, since it's very common in the biological sciences!
+
+## Libraries and functions
+
+::: {.callout-note collapse="true"}
+## Click to expand
+
+::: {.panel-tabset group="language"}
+## R
+
+### Libraries
+
+```{r}
+#| eval: false
+# A collection of R packages designed for data science
+library(tidyverse)
+```
+
+## Python
+
+### Libraries
+
+```{python}
+#| eval: false
+# A Python data analysis and manipulation tool
+import pandas as pd
+
+# Simple yet exhaustive stats functions.
+import pingouin as pg
+
+# Python equivalent of `ggplot2`
+from plotnine import *
+
+# Statistical models, conducting tests and statistical data exploration
+import statsmodels.api as sm
+
+# Convenience interface for specifying models using formula strings and DataFrames
+import statsmodels.formula.api as smf
+```
+:::
+:::
+
+## Exercise 1 - Flower petals
+
+This dataset contains three variables: `shade`, which refers to the degree of shading that the plant received while growing; `petals`, the number of petals recorded on an individual flower of that plant; and `plant`, the numerical ID assigned to the plant.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| results: hide
+#| message: false
+flowers <- read_csv("data/flowers.csv")
+```
+
+## Python
+
+```{python}
+# load the data
+flowers_py = pd.read_csv("data/flowers.csv")
+
+# and have a look
+flowers_py.head()
+```
+
+:::
+
+Having read in the dataset, we can start by doing some visualisation and analysis. Let's have a look at how the petal number differs across the shade conditions, and then run a one-way ANOVA to compare the groups statistically.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+# construct a boxplot, grouped by shade
+
+flowers %>%
+  ggplot(aes(x = shade, y = petals)) +
+  geom_boxplot()
+```
+
+Next, we run a one-way ANOVA:
+
+```{r}
+# create a linear model and run an ANOVA
+lm_flowers <- lm(petals ~ shade, data = flowers)
+anova(lm_flowers)
+```
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a boxplot
+(ggplot(flowers_py,
+        aes(x = "shade",
+            y = "petals")) +
+     geom_boxplot())
+```
+
+Next, we run a one-way ANOVA:
+
+```{python}
+# construct a one-way ANOVA
+pg.anova(dv = "petals",
+         between = "shade",
+         data = flowers_py,
+         detailed = True).round(5)
+```
+
+:::
+
+The plot and one-way ANOVA are both pretty convincing. It looks as if there are most petals on flowers in full sun, and the least petals on flowers in full shade, with partial shade somewhere in the middle.
+
+However, you may have noticed something about this dataset - namely, that multiple measurements of the `petals` variable have been made per plant. Or, to put it another way, though we have *biological* replicates by having measured from `r flowers %>% distinct(plant) %>% nrow()` different plants, our `petals` measurements appear to be *technical* replicates.
+
+This dataset is a prime example of **pseudoreplication**.
+
+Let's adapt this dataset, by finding the mean petal count per plant.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| message: false
+mean_flowers <- flowers %>%
+  group_by(plant, shade) %>%
+  summarise(petals = mean(petals))
+
+mean_flowers
+```
+
+## Python
+
+```{python}
+mean_flowers_py = flowers_py.groupby(['plant', 'shade']).mean().reset_index()
+
+mean_flowers_py
+```
+:::
+
+Now, we have a much clearer *n* = `r flowers %>% distinct(plant) %>% nrow()`. What happens if we re-run our analyses, with these mean values?
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+# construct a new boxplot
+mean_flowers %>%
+  ggplot(aes(x = shade, y = petals)) +
+  geom_boxplot()
+```
+
+Run a new ANOVA:
+
+```{r}
+# ANOVA on the mean petal counts per plant
+lm_mean <- lm(petals ~ shade, data = mean_flowers)
+anova(lm_mean)
+```
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a boxplot
+(ggplot(mean_flowers_py,
+        aes(x = "shade",
+            y = "petals")) +
+     geom_boxplot())
+```
+
+Next, we run a one-way ANOVA:
+
+```{python}
+# construct a one-way ANOVA
+pg.anova(dv = "petals",
+         between = "shade",
+         data = mean_flowers_py,
+         detailed = True).round(3)
+```
+:::
+
+If anything, the resulting boxplot looks *more* convincing than it did before. However, we don't get the same picture with the ANOVA. The p-value is far larger than before, to the point where this analysis is no longer significant. The reason for this is simple - previously, we ran an analysis with a false *n* = `r flowers %>% nrow()`, which gave enough power to detect an effect. However, using the true *n* = `r flowers %>% distinct(plant) %>% nrow()`, we discover that all that statistical power was an illusion or artefact, and with just `r flowers %>% distinct(plant) %>% nrow()` plants, we can see only the beginning of a trend.
+
+## Exercise 2 - Cabbages
+
+Each row in the cabbages dataset refers to an individual cabbage, harvested by a farmer who has been trying to find the optimum levels of fertiliser in his six fields. There are four variables: response variable `weight`, the weight of individual cabbages; `N_rate`, the rate of nitrogen fertiliser applied to the field in kilograms per metre; `fertiliser`, a categorical variable describing whether the fertiliser was liquid or granular; and `field`, the ID of the field that the cabbage was harvested from.
+
+Start by reading in the dataset. It's also important that we tell R to treat the `N_rate` variable as an ordinal variable, or factor, rather than as a continuous numerical variable.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| message: false
+cabbages <- read_csv("data/cabbages.csv")
+
+# convert the N_rate column to factor
+cabbages <- cabbages %>%
+  mutate(N_rate = as.factor(N_rate))
+```
+
+## Python
+
+```{python}
+# load the data
+cabbages_py = pd.read_csv("data/cabbages.csv")
+
+# convert the N_rate column to factor
+cabbages_py['N_rate'] = cabbages_py['N_rate'].astype('category')
+```
+:::
+
+The farmer is interested in knowing whether nitrogen rate and fertiliser type affects the weight of harvested cabbages in his fields.
+
+On the face of it, you may therefore start by fitting a linear model with these two variables as predictors (since they're both categorical, that's a two-way ANOVA):
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+lm_cabbage <- lm(weight ~ N_rate * fertiliser, data = cabbages)
+anova(lm_cabbage)
+```
+
+## Python
+
+```{python}
+# create a linear model
+model = smf.ols(formula = "weight ~ N_rate * fertiliser",
+                data = cabbages_py)
+# and get the fitted parameters of the model
+lm_cabbages_py = model.fit()
+
+# look at the model output
+sm.stats.anova_lm(lm_cabbages_py)
+```
+:::
+
+This indicates that there is a significant interaction between `N_rate` and `fertiliser`. To help us visualise the direction of that effect, we can plot the data as follows:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+cabbages %>%
+  ggplot(aes(x = N_rate, y = weight, fill = fertiliser)) +
+  geom_boxplot()
+```
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a boxplot
+(ggplot(cabbages_py,
+        aes(x = "N_rate",
+            y = "weight",
+            fill = "fertiliser")) +
+     geom_boxplot())
+```
+
+:::
+
+Together with the ANOVA table, you might be able to make some recommendations to the farmer about the optimum fertiliser programme for his cabbages.
+
+But - is this a sensible approach? Do we trust the conclusions?
+
+To help you answer that question, let's visualise the effect of the `field` variable, and its relationship to other variables, with a plot:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+cabbages %>%
+  ggplot(aes(x = field, y = weight,
+             colour = fertiliser, size = N_rate)) +
+  geom_point()
+```
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a boxplot
+(ggplot(cabbages_py,
+        aes(x = "field", y = "weight",
+            colour = "fertiliser",
+            size = "N_rate")) +
+     geom_point())
+```
+:::
+
+This is rudimentary, but it hopefully helps to illustrate one of two problems with the approach taken here: our different treatments/conditions in the `fertiliser` and `N_rate` variables have been applied, wholesale, to entire fields. Which makes sense, practically speaking - it's hard to see how you would do any differently - but it does mean that there are issues with treating individual cabbages as independent observations, rather than technical replicates.
+
+Have a think about how you could actually investigate this question, using the dataset presented here. What is our actual value of *n*? (Or put another way: which are our biological replicates?) What kind of model might you fit instead of the linear model fitted above?
+
+## Criteria for true independent replication
+
+Confusing our biological and technical replicates leads to pseudoreplication, as discussed above. So, how do we make sure that we truly do have biological replicates?
+
+For a replicate to qualify as a biological, rather than technical replicate, it needs to meet three criteria for independence. These are:
+
+**1) Independent randomisation to different treatment conditions**
+
+There should be no systematic bias in how biological replicates are allocated to conditions. This means that allocations can't be made on the basis of sample characteristics. In the first example above, the flowers weren't randomly assigned to different shade conditions - they were assigned on the basis of which plant they were growing on, meaning that they weren't independent of one another.
+
+**2) The experimental intervention must be applied independently**
+
+This is to ensure that any technical error is random. In the second example above, if the farmer incorrectly measures the nitrogren he's adding to one of his fields, this will affect more than just a single cabbage - it will likely affect a whole group of them, if not the entire field.
+
+**3) Data points/biological replicates must not influence each other**
+
+Whether they are from the same or different conditions, biological replicates shouldn't have an affect on one another (at least not *before* you've collected the data you need!). This may involve human participants conferring about the study, or in an experiment that involves cell culture, may involve organisms competing with one another for resources and affecting the rate of growth.
+
+## Summary
+
+::: {.callout-tip}
+#### Key Points
+
+- Biological replicates increase *n*, while technical replicates do not
+- The value of *n* can have a meaningful impact on the results of significance tests
+- Pseudoreplication in a sample can lead to a researcher drawing the wrong conclusions
+:::

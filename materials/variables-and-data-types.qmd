@@ -1,0 +1,67 @@
+---
+title: "Variables and data types"
+---
+
+One of the important factors in helping us to choose a statistical test is what type of variables we have. This section of the course materials gives a brief overview of the variable types that you might find in your dataset, and how to recognise the difference between them. The rest of the course will help you decide what to do with that knowledge.
+
+## Independent vs paired samples
+
+You've already encountered the distinction between independent and paired samples in this course, when looking at different types of t-tests. Here, we'll have a little review, and think about the reasons why we might choose these different approaches, from an experimental design perspective.
+
+**Independent sampling** = a separate group undergoes each condition; in other words, the datapoints in each of your categories represent different biological units or samples.
+
+In lots of cases, you won't have a choice to collect anything other than independent samples, because you don't always get to assign the biological units/samples to the conditions as an experimenter. Patients vs controls, species A vs species B, etc. 
+
+Sometimes you do get to decide, and will still choose to collect independent samples. Having separate groups undertake the different conditions guarantees that those conditions can't affect one another. For instance, if you're testing the outcomes of different drugs, you may want a completely different set of people for each new drug, since giving multiple drugs to the same people could make it difficult to detect their individual efficacy, if they have interacting effects.
+
+**Paired sampling** = the same group undergoes each condition (usually one after another).
+
+Paired sampling comes in when you want to compare the same individuals or samples across multiple time points, e.g., if measuring improvement after a treatment. 
+
+One of the major advantages of paired sampling is that matching of samples between conditions is perfect, because individuals are matched directly to themselves. This is useful in situations where you have unusual or extreme individuals; if you have a quirky person in your psychology study, they will bring their quirkiness to all of the conditions, and so you can factor out that quirkiness when comparing the conditions. This innate matching is a strength of paired sampling that you don't get with independent samples (but see below for some discussion of matched pairs designs).
+
+Another advantage of paired samples is that you typically need fewer unique samples or participants in your study, and so it can be easier to collect the data. 
+
+However, as discussed above, using the same biological units can cause "contamination" between conditions, introducing unexpected interactions or bias; or, if you're testing on humans or animals, they may get tired or bored and not participate as effectively as time goes on. So, there are plenty of situations where using paired samples wouldn't be appropriate.
+
+![Independent vs paired samples](img/indep-vs-paired.png)
+
+The pros of one approach are the cons of the other. You may well find that the nature of your research makes the decision for you, in which case your main job is identifying which type of sampling you have, and using the appropriate statistical test. However, if you're in a situation where you get to choose, it's worth thinking carefully about which of these methods will give you the most confidence about your conclusions.
+
+## Matched pairs design
+
+Propensity score matching?
+
+![Matched pairs design](img/matched-pairs.png)
+
+
+## Categorical vs continuous variables
+
+So far in this course, you have encountered both categorical and continuous variable. Take X example...
+
+![Different types of data](img/data-types.png)
+
+Special mention for ordinal variables, which you can think of as directional categorical variables. We have a way of dealing with these in R - factors, categorical variables where a specific order is preserved. We refer to the groups/categories as "levels" of the factor.
+
+If the distinction between interval and ratio doesn't mean very much to you, don't worry. It's not essential to wrap your head around it for the sake of using continuous variables in your statistical analyses, both within and beyond this course.
+
+What's more important is being able to distinguish between ordinal and interval data, as they can sometimes *seem* similar. For instance, if you've asked people to rate something out of 5, the results you'll get will appear to be integer values. This 
+
+::: {.callout-tip collapse="true"}
+## Title
+:::
+
+## Criteria for a good research question
+
+Text text text
+
+## Summary
+
+::: {.callout-tip}
+#### Key points
+
+- Independent vs paired
+- Matched pairs
+- Continuous vs categorical
+- 4 types of data
+:::

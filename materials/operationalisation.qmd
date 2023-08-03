@@ -1,0 +1,460 @@
+---
+title: "Operationalising variables"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| results: hide
+source(file = "setup_files/setup.R")
+```
+
+```{python}
+#| echo: false
+#| message: false
+import shutup;shutup.please()
+exec(open('setup_files/setup.py').read())
+```
+
+This section of the course covers how we define and measure variables, and how that can affect our analyses. This is illustrated with an example dataset. If you want to do the exercises yourself, make sure to check if you have all the required libraries installed.
+
+## Libraries and functions
+
+::: {.callout-note collapse="true"}
+## Click to expand
+
+::: {.panel-tabset group="language"}
+## R
+
+### Libraries
+
+```{r}
+#| eval: false
+# A collection of R packages designed for data science
+library(tidyverse)
+```
+
+## Python
+
+### Libraries
+
+```{python}
+#| eval: false
+# A Python data analysis and manipulation tool
+import pandas as pd
+
+# Simple yet exhaustive stats functions.
+import pingouin as pg
+
+# Python equivalent of `ggplot2`
+from plotnine import *
+
+# Statistical models, conducting tests and statistical data exploration
+import statsmodels.api as sm
+
+# Convenience interface for specifying models using formula strings and DataFrames
+import statsmodels.formula.api as smf
+```
+:::
+:::
+
+## Exercise 1 - Cycling to work
+
+For this example, we're interested in finding out whether cycling to work increases staff members' productivity.
+
+Download the `productivity.csv` file.
+
+This file contains a fictional dataset that explores the relationship between cycling to work and productivity at work. Each row corresponds to a different staff member at a small Cambridge-based company. There are four variables: `cycle` is a categorical variable denoting whether the individual cycles to work; `distance` is the distance in kilometres between the individual's house and the office; `projects` is the number of projects successfully completed by the individual within the last 6 months; and `mean_hrs` is the average number of hours worked per week in the last 6 months.
+
+As you may have noticed, we have two variables here that could serve as measures of productivity, and two ways of looking at cycling - whether someone cycles, versus how far they cycle.
+
+First, let's start by reading in the data, and visualising it.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| results: false
+#| message: false
+# load the data
+productivity <- read_csv("data/productivity.csv")
+
+# and have a look
+head(productivity)
+```
+
+## Python
+
+```{python}
+# load the data
+productivity_py = pd.read_csv("data/productivity.csv")
+
+# and have a look
+productivity_py.head()
+```
+:::
+
+Now it's time to explore this data in a bit more detail. We can gain some insight by examining our two measures of "cycling" (our yes/no categorical variable, and the distance between home and office) and our two measures of "productivity" (mean hours worked per week, and projects completed in the last 6 months). 
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+# visualise using a boxplot
+
+productivity %>%
+  ggplot(aes(x = cycle, y = distance)) +
+  geom_boxplot()
+```
+
+Now, we'll use a t-test to compare `distance` between those who cycle, and those who don't.
+
+```{r}
+t.test(distance ~ cycle, data = productivity)
+```
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a boxplot
+(ggplot(productivity_py,
+        aes(x = "cycle",
+            y = "distance")) +
+     geom_boxplot())
+```
+
+Next, we compare the distance between those who cycle and those who do not. We use a t-test, since there are only two groups.
+
+Here we use the `ttest()` function from the `pingouin` library. This needs two vectors as input, so we split the data as follows and then run the test:
+
+```{python}
+dist_no_cycle = productivity_py.query('cycle == "no"')["distance"]
+dist_yes_cycle = productivity_py.query('cycle == "yes"')["distance"]
+
+pg.ttest(dist_no_cycle, dist_yes_cycle).transpose()
+```
+
+:::
+
+Let's look at the second set of variables: the mean hours of worked per week and the number of projects completed in the past 6 months. When visualising this, we need to consider the `projects` as a categorical variable.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+# visualise the data
+productivity %>%
+  ggplot(aes(x = as.factor(projects), y = mean_hrs)) +
+  geom_boxplot()
+
+# construct a one-way ANOVA, treating projects as a categorical variable
+
+lm_prod <- lm(mean_hrs ~ as.factor(projects), data = productivity)
+anova(lm_prod)
+```
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a boxplot
+(ggplot(productivity_py,
+        aes(x = productivity_py['projects'].astype('category'),
+            y = "mean_hrs")) +
+     geom_boxplot())
+```
+
+```{python}
+# construct a one-way ANOVA, treating projects as a categorical variable
+pg.anova(dv = "mean_hrs",
+         between = "projects",
+         data = productivity_py,
+         detailed = True).round(3)
+```
+
+:::
+
+What does this tell you about how these two sets of variables, which (in theory at least!) tap into the same underlying construct, relate to one another? Can you spot any problems, or have you got any concerns at this stage?
+
+If so, hold that thought.
+
+#### Assessing the effect of cycling on productivity
+
+The next step is to run some exploratory analyses. Since we're not going to reporting these data in any kind of paper or article, and the whole point is to look at different versions of the same analysis with different variables, we won't worry about multiple comparison correction here.
+
+When treating `mean_hrs` as our response variable, we can use standard linear models approach, since this variable is continuous.
+
+::: {.panel-tabset group="language"}
+
+## R
+
+```{r}
+# visualise using ggplot
+
+productivity %>%
+  ggplot(aes(x = cycle, y = mean_hrs)) +
+  geom_boxplot()
+
+# run a t-test to compare mean_hrs for those who cycle vs those who don't
+
+t.test(mean_hrs ~ cycle, data = productivity)
+```
+
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a boxplot
+(ggplot(productivity_py,
+        aes(x = "cycle",
+            y = "mean_hrs")) +
+     geom_boxplot())
+```
+
+```{python}
+# run a t-test to compare mean_hrs for those who cycle vs those who don't
+hrs_no_cycle = productivity_py.query('cycle == "no"')["mean_hrs"]
+hrs_yes_cycle = productivity_py.query('cycle == "yes"')["mean_hrs"]
+
+pg.ttest(hrs_no_cycle, hrs_yes_cycle).transpose()
+```
+
+:::
+
+Let's also look at `mean_hrs` vs `distance`:
+
+::: {.panel-tabset group="language"}
+
+## R
+
+```{r}
+productivity %>%
+  ggplot(aes(x = distance, y = mean_hrs)) +
+  geom_point()
+
+# run a simple linear regression analysis
+
+lm_hrs1 <- lm(mean_hrs ~ distance, data = productivity)
+anova(lm_hrs1)
+```
+
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a scatterplot
+(ggplot(productivity_py,
+        aes(x = "distance",
+            y = "mean_hrs")) +
+     geom_point())
+```
+
+We can perform a linear regression on these data:
+
+```{python}
+# create a linear model
+model = smf.ols(formula = "mean_hrs ~ distance",
+                data = productivity_py)
+# and get the fitted parameters of the model
+lm_hrs1_py = model.fit()
+
+# look at the model output
+print(lm_hrs1_py.summary())
+```
+
+:::
+
+This shows us that while `cycle` does not significantly predict `mean_hrs`, `distance` does. (If you had some concerns about the `distance` variable earlier, continue to hold that thought.)
+
+So, that's the picture for `mean_hrs`, the first of our two possible outcome variables. What about the predictive relationship(s) of cycling on our other candidate outcome variable, `projects`?
+
+Let's try fitting some models with `projects` as the outcome. We'll continue to use linear models for this for now, although technically, as `projects` is what we would refer to as a count variable, we should technically be fitting a different type of model called a generalised linear model. This topic will come up later in the week, and for this dataset the two types of model lead to similar outcomes, so we won't worry about the distinction for now.
+
+First, we look at `distance` vs `projects`.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+productivity %>%
+  ggplot(aes(x = distance, y = projects)) +
+  geom_point()
+
+lm_proj1 <- lm(projects ~ distance, data = productivity)
+anova(lm_proj1)
+```
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a scatterplot
+(ggplot(productivity_py,
+        aes(x = "distance",
+            y = "projects")) +
+     geom_point())
+```
+
+```{python}
+# create a linear model
+model = smf.ols(formula = "projects ~ distance",
+                    data = productivity_py)
+# and get the fitted parameters of the model
+lm_proj1_py = model.fit()
+
+# look at the model output
+print(lm_proj1_py.summary())
+```
+:::
+
+Next, we look at `cycle` vs `projects`.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+productivity %>%
+  ggplot(aes(x = cycle, y = projects)) +
+  geom_boxplot()
+
+lm_proj2 <- lm(projects ~ cycle, data = productivity)
+anova(lm_proj2)
+```
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a scatterplot
+(ggplot(productivity_py,
+        aes(x = "cycle",
+            y = "projects")) +
+     geom_boxplot())
+```
+
+```{python}
+# create a generalised linear model
+model = smf.ols(formula = "projects ~ cycle",
+                    data = productivity_py)
+# and get the fitted parameters of the model
+lm_proj2_py = model.fit()
+
+# look at the model output
+print(lm_proj2_py.summary())
+```
+:::
+
+This shows us that `cycle` significantly predicts `projects`, meaning the number of projects that get completed is not completely random, but some of the variance in that can be explained by whether a person cycles to work, or not. In contrast, `distance` does not appear to be a significant predictor of `projects` (although it's only marginally non-significant). This is the opposite pattern, more or less, to the one we had for `mean_hrs`.
+
+#### That thought you were holding...
+
+Those of you who are discerning may have noticed that the `distance` variable is problematic as a measure of "cycling to work" in this particular dataset - this is because the dataset includes all the distances to work for the staff members who *don't* cycle, as well as those who do.
+
+What happens if we remove those values, and look at the relationship between `distance` and our response variables again?
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+# use the filter function to retain only the rows where the staff member cycles
+
+productivity_cycle <- productivity %>%
+  filter(cycle == "yes")
+```
+
+## Python
+
+```{python}
+productivity_cycle_py = productivity_py[productivity_py["cycle"] == "yes"]
+```
+:::
+
+We'll repeat earlier visualisations and analyses, this time with the colour aesthetic helping us to visualise how the `cycle` variable affects the relationships between `distance`, `mean_hrs` and `projects`.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+productivity %>%
+  ggplot(aes(x = distance, y = mean_hrs, colour = cycle)) +
+  geom_point()
+
+lm_hrs2 <- lm(mean_hrs ~ distance, data = productivity_cycle)
+anova(lm_hrs2)
+
+productivity %>%
+  ggplot(aes(x = distance, y = projects, colour = cycle)) +
+  geom_point()
+
+lm_proj3 <- lm(projects ~ distance, data = productivity_cycle)
+summary(lm_proj3)
+```
+
+## Python
+
+```{python}
+#| results: hide
+# visualise using a scatterplot
+(ggplot(productivity_py,
+        aes(x = "distance",
+            y = "mean_hrs",
+            colour = "cycle")) +
+     geom_point())
+```
+
+```{python}
+# create a linear model
+model = smf.ols(formula = "mean_hrs ~ distance",
+                data = productivity_cycle_py)
+# and get the fitted parameters of the model
+lm_hrs2_py = model.fit()
+
+# look at the model output
+print(lm_hrs2_py.summary())
+```
+
+```{python}
+#| results: hide
+# visualise using a scatterplot
+(ggplot(productivity_py,
+        aes(x = "distance",
+            y = "projects",
+            colour = "cycle")) +
+     geom_point())
+```
+
+```{python}
+# create a linear model
+model = smf.ols(formula = "projects ~ distance",
+                    data = productivity_cycle_py)
+# and get the fitted parameters of the model
+lm_proj3_py = model.fit()
+
+# look at the model output
+print(lm_proj3_py.summary())
+```
+:::
+
+Ah. Turns out we were right to be concerned; when staff members who don't cycle are removed from the dataset, the significant relationship that we saw earlier between `distance` and `mean_hrs` disappears. And the marginally non-significant relationship we observed between `distance` and `projects` becomes much less significant.
+
+This leaves us with just one significant result: `projects ~ cycle`. But if we really were trying to report on these data, in a paper or report of some kind, we'd need to think very carefully about how much we *trust* this result, or whether perhaps we've stumbled on a false positive by virtue of running so many tests. We may also want to think carefully about whether or not we're happy with these definitions of the variables; for instance, is the number of projects completed really the best metric for productivity at work?
+
+## Summary
+
+::: {.callout-tip}
+#### Key Points
+
+- There are multiple ways to operationalise a variable, which may affect whether the variable is categorical or continuous
+- The nature of the response variable will alter what type of model can be fitted to the dataset
+- Some operationalisations may better capture your variable of interest than others
+- If you do not effectively operationalise your variable in advance, you may find yourself "cherry-picking" your dataset
+:::

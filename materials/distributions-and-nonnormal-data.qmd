@@ -1,0 +1,24 @@
+---
+title: "Dealing with non-normal data"
+---
+
+
+
+::: {.callout-tip collapse="true"}
+## Title
+:::
+
+## Criteria for a good research question
+
+Text text text
+
+## Summary
+
+::: {.callout-tip}
+#### Key points
+
+- Independent vs paired
+- Matched pairs
+- Continuous vs categorical
+- 4 types of data
+:::

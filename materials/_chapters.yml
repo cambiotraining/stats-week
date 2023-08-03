@@ -7,6 +7,9 @@ book:
         - materials/cs1_practical_two-samples.qmd
         - materials/cs1_practical_two-samples-paired.qmd
     - part: "Variables & distributions"
+      chapters:
+        - materials/variables-and-data-types.qmd
+        - materials/distributions-and-nonnormal-data.qmd
     - part: "Categorical predictors"
       chapters:
         - materials/cs2_practical_anova.qmd
@@ -24,9 +27,15 @@ book:
         - materials/cs5_practical_multiple-linear-regression.qmd
         - materials/cs5_practical_model-comparisons.qmd
     - part: "Reconsidering variables"
+      chapters:
+        - materials/operationalisation.qmd
+        - materials/confounds.qmd
+        - materials/replication.qmd
     - part: "Statistical power"
       chapters:
         - materials/cs6_practical_power-analysis.qmd
+        - materials/power-analysis.qmd
+        - materials/piloting.qmd
     - part: "Extending the linear model"
       chapters:
         - materials/glm-intro-lm.qmd
