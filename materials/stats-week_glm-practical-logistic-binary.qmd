@@ -344,11 +344,11 @@ blength        3.3866
 
 :::
 
-These are the coefficients of the logistic model equation and need to be placed in the correct equation if we want to be able to actually calculate the probability of having a pointed beak for a given beak length.
+These are the coefficients of the logistic model equation and need to be placed in the correct equation if we want to be able to calculate the probability of having a pointed beak for a given beak length.
 
 The $p$ values at the end of each coefficient row merely show whether that particular coefficient is significantly different from zero. This is similar to the $p$ values obtained in the summary output of a linear model. As with continuous predictors in simple models, these $p$ values can be used to decide whether that predictor is important (so in this case beak length appears to be significant). However, these $p$ values aren’t great to work with when we have multiple predictor variables, or when we have categorical predictors with multiple levels (since the output will give us a $p$ value for each level rather than for the predictor as a whole).
 
-We can use the coefficients to actually calculate the probability of having a pointed beak for a given beak length:
+We can use the coefficients to calculate the probability of having a pointed beak for a given beak length:
 
 $$ P(pointed \ beak) = \frac{\exp(-43.41 + 3.39 \times blength)}{1 + \exp(-43.41 + 3.39 \times blength)} $$
 
@@ -363,7 +363,7 @@ Well, the probability of having a pointed beak if the beak length is large (for 
 exp(-43.41 + 3.39 * 15) / (1 + exp(-43.41 + 3.39 * 15))
 ```
 
-If the beak length is small (for example 10 mm), the probability is extremely low:
+If the beak length is small (for example 10 mm), the probability of having a pointed beak is extremely low:
 
 ```{r}
 exp(-43.41 + 3.39 * 10) / (1 + exp(-43.41 + 3.39 * 10))
@@ -382,14 +382,14 @@ import math
 math.exp(-43.41 + 3.39 * 15) / (1 + math.exp(-43.41 + 3.39 * 15))
 ```
 
-If the beak length is small (for example 10 mm), the probability is extremely low:
+If the beak length is small (for example 10 mm), the probability of having a pointed beak is extremely low:
 
 ```{python}
 math.exp(-43.41 + 3.39 * 10) / (1 + math.exp(-43.41 + 3.39 * 10))
 ```
 :::
 
-We can actually calculate the the probabilities for all our observed values and if we do that then we can see that the larger the beak length is, the higher the probability that a beak shape would be pointed. I'm visualising this together with the logistic curve, where the blue points are the calculated probabilities:
+We can calculate the the probabilities for all our observed values and if we do that then we can see that the larger the beak length is, the higher the probability that a beak shape would be pointed. I'm visualising this together with the logistic curve, where the blue points are the calculated probabilities:
 
 ::: {.callout-note collapse=true}
 ## Code available here
