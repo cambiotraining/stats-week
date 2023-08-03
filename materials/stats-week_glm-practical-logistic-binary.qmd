@@ -248,11 +248,17 @@ So far we've established that using a simple linear model to describe a potentia
 
 One of the ways we can deal with binary outcome data is by performing a logistic regression. Instead of fitting a straight line to our data, and performing a regression on that, we fit a line that has an S shape. This avoids the model making predictions outside the $[0, 1]$ range.
 
-There are many mathematical functions that produce S-shaped graphs. The **logistic function** is one of them and well-suited to these kind of data.
+We described our standard linear relationship as follows:
 
-In the most simple form a logistic function is written like this:
+$Y = \beta_0 + \beta_1X$
 
-$Y = \frac{\exp(X)}{1 + \exp(X)}$
+We can now map this to our non-linear relationship via the **logistic link function**:
+
+$Y = \frac{\exp(X)}{1 + \exp(\beta_0 + \beta_1X)}$
+
+Note that the $\beta_0 + \beta_1X$ part is identical to the formula of a straight line.
+
+The rest of the function is what makes the straight line curve into its characteristic S shape. 
 
 :::{.callout-note collapse=true}
 ## Euler's number ($\exp$): would you like to know more?
@@ -260,13 +266,7 @@ $Y = \frac{\exp(X)}{1 + \exp(X)}$
 In mathematics, $\rm e$ represents a constant of around 2.718. Another notation is $\exp$, which is often used when notations become a bit cumbersome. Here, I exclusively use the $\exp$ notation for consistency.
 :::
 
-We can _generalise_ this, by writing it as follows:
-
-$Y = \frac{\exp(X)}{1 + \exp(\beta_0 + \beta_1X)}$
-
-Note that the $\beta_0 + \beta_1X$ part is identical to the formula of a straight line. We've come across this before when we were doing simple linear regression!
-
-The rest of the function is what makes the straight line curve into its characteristic S shape. We can fit such an S-shaped curve to our `early_finches` data set, by creating a generalised linear model.
+We can fit such an S-shaped curve to our `early_finches` data set, by creating a generalised linear model.
 
 ::: {.panel-tabset group="language"}
 ## R
