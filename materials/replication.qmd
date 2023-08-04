@@ -339,11 +339,9 @@ This is to ensure that any technical error is random. In the second example abov
 
 Whether they are from the same or different conditions, biological replicates shouldn't have an affect on one another (at least not *before* you've collected the data you need!). This may involve human participants conferring about the study, or in an experiment that involves cell culture, may involve organisms competing with one another for resources and affecting the rate of growth.
 
-## Summary
+## Key points
 
-::: {.callout-tip}
-#### Key Points
-
+::: {.callout-note}
 - Biological replicates increase *n*, while technical replicates do not
 - The value of *n* can have a meaningful impact on the results of significance tests
 - Pseudoreplication in a sample can lead to a researcher drawing the wrong conclusions

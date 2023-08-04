@@ -89,10 +89,9 @@ Below is a little cheat-table, that gives you some ideas of the non-parametric e
 
 Now that you know this, you can go back to the previous section on different types of t-test and complete the additional exercises at the bottom of each page.
 
-## Summary
+## Key points
 
-::: {.callout-tip}
-#### Key points
+::: {.callout-note}
 
 - A distribution is a probability function that represents the possible values a variable can take, and the relative likelihood of those values occurring
 - The normal distribution comes up often in statistics to describe continuous variables, but there are many others 

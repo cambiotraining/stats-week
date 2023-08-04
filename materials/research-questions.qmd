@@ -61,10 +61,9 @@ Below are a list of research questions that don't quite meet all of the above cr
 - Does spending a lot of time on social media affect children's development?
 - Can pet parrots live more than 50 years?
 
-## Summary
+## Key points
 
-::: {.callout-tip}
-#### Key points
+::: {.callout-note}
 
 - Within the statistical inference and hypothesis testing framework, it is essential to set a good research question
 - Setting the question is the first step to designing the experiment that will answer it
