@@ -49,7 +49,7 @@ book:
       - icon: twitter
         href: https://twitter.com/bioinfocambs
         aria-label: Bioinformatics Training Facility Twitter
-    title: "Statistical analysis and experimental design masterclass"
+    title: "Statistical analysis and experimental design"
   chapters:
     - part: "Welcome"
       chapters:

@@ -1,5 +1,5 @@
 ---
-title: "Statistical analysis and experimental design masterclass"
+title: "Statistical analysis and experimental design"
 author: "Vicki Hodgson, Martin van Rongen"
 date: today
 number-sections: false
