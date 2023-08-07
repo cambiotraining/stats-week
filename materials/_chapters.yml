@@ -36,7 +36,7 @@ book:
         - materials/cs6_practical_power-analysis.qmd
         - materials/power-analysis.qmd
         - materials/piloting.qmd
-    - part: "Extending the linear model"
+    - part: "Extending linear models"
       chapters:
         - materials/glm-intro-lm.qmd
         - materials/glm-intro-glm.qmd

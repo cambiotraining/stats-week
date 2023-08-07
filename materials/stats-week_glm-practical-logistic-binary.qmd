@@ -458,23 +458,173 @@ There is an interesting genetic story behind all this, but that will be explaine
 
 ## Exercises
 
-### title {#sec-exr_title}
+### Diabetes {#sec-exr_diabetes}
 
 :::{.callout-exercise}
 
 {{< level 2 >}}
 
-Exercise description
+For this exercise we'll be using the data from `data/diabetes.csv`.
+
+This is a data set comprising 768 observations of three variables (one dependent and two predictor variables). This records the results of a diabetes test result as a binary variable (1 is a positive result, 0 is a negative result), along with the result of a glucose tolerance test and the diastolic blood pressure for each of 768 women. The variables are called `test_result`, `glucose` and `diastolic`.
+
+We want to see if the `glucose` tolerance is a meaningful predictor for predictions on a diabetes test. To investigate this, do the following:
+
+1. Load and visualise the data
+2. Create a suitable model
+3. Determine if there are any statistically significant predictors
+4. Calculate the probability of a positive diabetes test result for a glucose tolerance test value of `glucose = 150`
 
 ::: {.callout-answer collapse="true"}
 ## Answer
 
+#### Load and visualise the data
+
+First we load the data, then we visualise it.
+
 ::: {.panel-tabset group="language"}
 ## R
 
+```{r}
+#| message: false
+#| warning: false
+diabetes <- read_csv("data/diabetes.csv")
+```
+
 ## Python
 
+```{python}
+diabetes_py = pd.read_csv("data/diabetes.csv")
+```
+
 :::
+
+Looking at the data, we can see that the `test_result` column contains zeros and ones. These are yes/no test result outcomes and not actually numeric representations.
+
+We'll have to deal with this soon. For now, we can plot the data, by outcome:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ggplot(diabetes,
+       aes(x = factor(test_result),
+           y = glucose)) +
+  geom_boxplot()
+```
+
+## Python
+
+We could just give Python the `test_result` data directly, but then it would view the values as numeric. Which doesn't really work, because we have two groups as such: those with a negative diabetes test result, and those with a positive one.
+
+We can force Python to temporarily covert the data to a factor, by making the `test_result` column an `object` type. We can do this directly inside the `ggplot()` function.
+
+```{python}
+#| results: hide
+(ggplot(diabetes_py,
+         aes(x = diabetes_py.test_result.astype(object),
+             y = "glucose")) +
+     geom_boxplot())
+```
+:::
+
+It looks as though the patients with a positive diabetes test have slightly higher glucose levels than those with a negative diabetes test.
+
+We can visualise that differently by plotting all the data points as a classic binary response plot:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ggplot(diabetes,
+       aes(x = glucose,
+           y = test_result)) +
+  geom_point()
+```
+
+## Python
+
+```{python}
+#| results: hide
+(ggplot(diabetes_py,
+         aes(x = "glucose",
+             y = "test_result")) +
+     geom_point())
+```
+
+:::
+
+#### Create a suitable model
+
+::: {.panel-tabset group="language"}
+## R
+
+We'll use the `glm()` function to create a generalised linear model. Here we save the model in an object called `glm_dia`:
+
+```{r}
+glm_dia <- glm(test_result ~ glucose,
+               family = binomial,
+               data = diabetes)
+```
+
+The format of this function is similar to that used by the `lm()` function for linear models. The important difference is that we must specify the _family_ of error distribution to use. For logistic regression we must set the family to **binomial**.
+
+## Python
+
+```{python}
+# create a linear model
+model = smf.glm(formula= "test_result ~ glucose",
+                family = sm.families.Binomial(),
+                data = diabetes_py)
+# and get the fitted parameters of the model
+glm_dia_py = model.fit()
+```
+
+:::
+
+Let's look at the model parameters:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+summary(glm_dia)
+```
+
+
+## Python
+
+```{python}
+print(glm_dia_py.summary())
+```
+:::
+
+We can see that `glucose` is a significant predictor for the `test_result` (the $p$ value is much smaller than 0.05).
+
+Knowing this, we're interested in the coefficients. We have an intercept of `-5.61` and `0.0395` for `glucose`. We can use these coefficients to write a formula that describes the potential relationship between the probability of having a positive test result, dependent on the glucose tolerance level value:
+
+$$ P(positive \ test\ result) = \frac{\exp(-5.61 + 0.04 \times glucose)}{1 + \exp(-5.61 + 0.04 \times glucose)} $$
+
+#### Calculating probabilities
+
+Using the formula above, we can now calculate the probability of having a positive test result, for a given `glucose` value. If we do this for `glucose = 150`, we get the following:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+exp(-5.61 + 0.04 * 150) / (1 + exp(-5.61 + 0.04 * 145))
+```
+
+## Python
+
+```{python}
+math.exp(-5.61 + 0.04 * 150) / (1 + math.exp(-5.61 + 0.04 * 145))
+```
+:::
+
+This tells us that the probability of having a positive diabetes test result, given a glucose tolerance level of 150 is around 67%.
+
 :::
 :::
 
