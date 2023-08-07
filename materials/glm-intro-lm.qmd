@@ -109,6 +109,7 @@ Let's look at this for one of the observations, for example finch 473:
 ```{r}
 #| echo: false
 #| message: false
+#| warning: false
 #| label: fig-finch473
 #| fig-cap: "Beak depth vs beak length (finch 473, 1975)"
 fortis_1975_example <- fortis_1975 %>% 
@@ -140,6 +141,7 @@ fortis_1975_example %>%
                aes(x = blength, xend = blength,
                    y = min_depth, yend = bdepth),
                linetype = "dashed",
+               linewidth = 1,
                colour = "#D55E00") +
   annotate(geom = "text", x = 10.55, y = 8, hjust = 0,
            label = "observed beak length") +
@@ -147,6 +149,7 @@ fortis_1975_example %>%
                aes(x = min_length, xend = blength,
                    y = bdepth, yend = bdepth),
                linetype = "dashed",
+               linewidth = 1,
                colour = "#D55E00") +
   geom_smooth(method = "lm", se = FALSE) +
   geom_point(data = finch473, aes(x = blength,
@@ -202,7 +205,9 @@ fortis_1975_example %>%
   geom_hline(yintercept = fortis_1975_example %>%
                summarise(mean_bd = mean(bdepth)) %>%
                pull(),
-             linetype = "dashed", colour = "#D55E00") +
+             linetype = "dashed", 
+             linewidth = 1,
+             colour = "#D55E00") +
   annotate(geom = "text", x = 8.5, y = 9.3, hjust = 0,
            label = "average beak depth")
 ```
