@@ -142,10 +142,6 @@ early_finches <- finches_2020 %>%
 ```
 
 ```{r}
-write_csv(early_finches, file = "data/finches_early.csv")
-```
-
-```{r}
 #| echo: false
 p3 <- ggplot(early_finches,
        aes(x = blength, y = pointed_beak)) +
