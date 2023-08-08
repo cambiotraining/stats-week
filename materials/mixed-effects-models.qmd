@@ -16,25 +16,29 @@ library(lme4)
 source(file = "setup_files/setup.R")
 ```
 
-Mixed effects models are particularly useful in biological and clinical sciences, where we commonly have innate clusters or groups within our datasets. This is because mixed effects models contain **random effects** in addition to **fixed effects** (hence the name, "mixed"). Rather than incorrectly assuming independence between observations, random effects allow us to take into account the natural clusters or structures within datasets, without requiring us to calculate separate coefficients for each group - in other words, solving the problem of psuedoreplication, without sacrificing as much statistical power.
+Mixed effects models are particularly useful in biological and clinical sciences, where we commonly have innate clusters or groups within our datasets. This is because mixed effects models contain **random effects** in addition to **fixed effects** (hence the name, "mixed"). 
 
-Getting your head around the difference between a fixed effect and a random effect can be tricky, but the good news is that once you've got that broader understanding, actually fitting a mixed effects model is very easy. We'll be using the `lme4` package in R, which is by far the most common and best choice of package for this type of model. (It's an update of the older package `nlme`, which you might also see people using.) The syntax is nice and simple and extends what we've been doing so far with the `lm()` function in (hopefully!) a very intuitive way. The package also contains functions for fitting non-linear mixed effects and generalised mixed effects models - though we won't be focusing on those here, it's nice to know that the package can handle them in case you ever choose to explore them in future!
+Rather than incorrectly assuming independence between observations, random effects allow us to take into account the natural clusters or structures within datasets, without requiring us to calculate separate coefficients for each group - in other words, solving the problem of psuedoreplication, without sacrificing as much statistical power.
 
-For Python users, the `pymer4` package in Python allows you to "borrow" most of the functionality of R's `lme4`, though it still has many bugs that make it difficult to run on any system except Linux. There is also some functionality for fitting mixed models using `statsmodels` in Python. We won't be using those packages here, but you may wish to explore them if you are a die-hard Python user!
+Getting your head around the difference between a fixed effect and a random effect can be tricky, but the good news is that once you've got that broader understanding, actually fitting a mixed effects model is very easy. 
 
 ## Libraries and functions
 
 ::: {.callout-note collapse="true"}
 ## Click to expand
 
+We'll be using the `lme4` package in R, which is by far the most common and best choice of package for this type of model. (It's an update of the older package `nlme`, which you might also see people using.) The syntax is nice and simple and extends what we've been doing so far with the `lm()` function in (hopefully!) a very intuitive way. The package also contains functions for fitting non-linear mixed effects and generalised mixed effects models - though we won't be focusing on those here, it's nice to know that the package can handle them in case you ever choose to explore them in future!
+
+For Python users, the `pymer4` package in Python allows you to "borrow" most of the functionality of R's `lme4`, though it still has many bugs that make it difficult to run on any system except Linux. There is also some functionality for fitting mixed models using `statsmodels` in Python. We won't be using those packages here, but you may wish to explore them if you are a die-hard Python user!
+
 ## R
 ### Libraries
 ```{r}
 #| eval: false
-# A collection of R packages designed for data science
+# you'll need this for plotting
 library(tidyverse)
 
-# Install and load lme4
+# install and load lme4 for fitting mixed effects models
 install.packages("lme4")
 library(lme4)
 ```
