@@ -36,7 +36,7 @@ The uniform distribution is just a flat line - i.e., the value of y is constant 
 
 A classic example of a real-world phenomenon that follows a uniform distribution is a standard six-sided die. Each time you roll the die, the likelihood of each of the six numbers coming up is 1/6. Each outcome is equally likely - contrast this to a normal distribution, where outcomes closer to the mean are much more likely to occur, compared to extreme values far from the mean.
 
-A uniform distribution has two parameters: the minimum (a) and maximum (b). In the case of the six-sided die, a = 1 and b = 2. The probability of any values outside of this range would be 0.
+A uniform distribution has two parameters: the minimum (a) and maximum (b). In the case of the six-sided die, a = 1 and b = 6. The probability of any values outside of this range would be 0.
 :::
 
 ::: {.callout-tip collapse="true"}
