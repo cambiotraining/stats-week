@@ -3,12 +3,6 @@ title: "Mixed effects models"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(lme4)
-```
-
 ```{r}
 #| echo: false
 #| message: false
@@ -18,7 +12,7 @@ source(file = "setup_files/setup.R")
 
 Mixed effects models are particularly useful in biological and clinical sciences, where we commonly have innate clusters or groups within our datasets. This is because mixed effects models contain **random effects** in addition to **fixed effects** (hence the name, "mixed"). 
 
-Rather than incorrectly assuming independence between observations, random effects allow us to take into account the natural clusters or structures within datasets, without requiring us to calculate separate coefficients for each group - in other words, solving the problem of psuedoreplication, without sacrificing as much statistical power.
+Rather than incorrectly assuming independence between observations, random effects allow us to take into account the natural clusters or structures within datasets, without requiring us to calculate separate coefficients for each group. In other words, this solves the problem of pseudoreplication, without sacrificing as much statistical power.
 
 Getting your head around the difference between a fixed effect and a random effect can be tricky, but the good news is that once you've got that broader understanding, actually fitting a mixed effects model is very easy. 
 
@@ -31,8 +25,11 @@ We'll be using the `lme4` package in R, which is by far the most common and best
 
 For Python users, the `pymer4` package in Python allows you to "borrow" most of the functionality of R's `lme4`, though it still has many bugs that make it difficult to run on any system except Linux. There is also some functionality for fitting mixed models using `statsmodels` in Python. We won't be using those packages here, but you may wish to explore them if you are a die-hard Python user!
 
+::: {.panel-tabset group="language"}
 ## R
+
 ### Libraries
+
 ```{r}
 #| eval: false
 # you'll need this for plotting
@@ -43,23 +40,25 @@ install.packages("lme4")
 library(lme4)
 ```
 :::
+:::
 
-As an example, we're going to use the internal `sleepstudy` dataset from the `lme4` package in R (this dataset is also provided as a csv file, if you'd prefer to read it in or are using Python). This is a simple dataset taken from a real study that investigated the effects of sleep deprivation on reaction times in 18 subjects, and has just three variables: `Reaction`, reaction time in milliseconds; `Days`, number of days of sleep deprivation; and `Subject`, subject ID.
+## The sleep study data
+
+As an example, we're going to use the internal `sleepstudy` dataset from the `lme4` package in R (this dataset is also provided as a `.csv` file, if you'd prefer to read it in or are using Python). This is a simple dataset taken from a real study that investigated the effects of sleep deprivation on reaction times in 18 subjects, and has just three variables: `Reaction`, reaction time in milliseconds; `Days`, number of days of sleep deprivation; and `Subject`, subject ID.
 
 ```{r}
-#| results: false
 #| message: false
-
 data("sleepstudy")
 
 head(sleepstudy)
 ```
 
-Have a look at the data more closely. You'll notice that for each subject, we've got 10 measurements, one for each day of sleep deprivation. This repeated measurement means that our datapoints are not independent of one another; for each subject in the study, we would expect measurements of reaction times to be more similar to one another than they are to reaction times of another subject.
+Have a look at the data more closely. You'll notice that for each subject, we've got 10 measurements, one for each day of sleep deprivation. This repeated measurement means that our data are not independent of one another; for each subject in the study we would expect measurements of reaction times to be more similar to one another than they are to reaction times of another subject.
 
 Let's start by doing something that we know is wrong, and ignoring this dependence for now. We'll begin by visualising the data with a simple scatterplot.
 
 ```{r}
+#| message: false
 ggplot(sleepstudy, aes(x = Days, y = Reaction)) +
   geom_point() +
   geom_smooth(method = "lm")
@@ -69,16 +68,23 @@ This gives the overall impression that we might expect - reaction time does seem
 
 But, as we've already pointed out, ignoring the fact that subjects' own reaction times will be more similar to themselves than to another subject's, we should make a point of accounting for this.
 
-## Adding a random effect in a mixed effects model
+## Adding a random effect
 
-In this dataset, we want to treat `Subject` as a random effect, which means fitting a mixed effects model. Why `Subject`? There's two things at play here that make us what to treat this as a random effect. One, `Subject` is a *grouping* variable within our dataset, and is causing us problems with independence. Two, it's not these specific 18 subjects that we're interested in - they instead represent 18 random selections from a broader distribution/population of subjects that we could have tested, and would like to generalise to.
+In this dataset, we want to treat `Subject` as a random effect, which means fitting a mixed effects model. Why `Subject`? There are two things at play here that make us what to treat this as a random effect:
 
-To fit the model, we use a different function, but the syntax looks very similar to how it looked before except with the addition of a new term `(1|Subject)`, which represents our random effect.
+1. `Subject` is a *grouping* variable within our dataset, and is causing us problems with independence.
+2. It's not these specific 18 subjects that we're interested in - they instead represent 18 random selections from a broader distribution/population of subjects that we could have tested. We would like to generalise our findings to this broader population.
+
+To fit the model, we use a different function to what we've used so far, but the syntax looks very similar. The difference is the addition of a new term `(1|Subject)`, which represents our random effect.
 
 ```{r}
-# construct a linear mixed effects model with Subject as a random effect
-lme_sleep1 <- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy)
+# construct a linear mixed effects model with Subject
+# as a random effect
+lme_sleep1 <- lmer(Reaction ~ Days + (1|Subject),
+                   data = sleepstudy)
+```
 
+```{r}
 # summarise the model
 summary(lme_sleep1)
 ```
@@ -89,57 +95,70 @@ Mixed effects models are much easier to get your head around them if you visuali
 
 ```{r}
 # create a linear model - we'll use this in our graph
-lm_sleep <- lm(Reaction ~ Days, data = sleepstudy)
+lm_sleep <- lm(Reaction ~ Days,
+               data = sleepstudy)
 
 # set up our basic plot
-ggplot(sleepstudy, aes(x=Days, y=Reaction)) +
+ggplot(sleepstudy, aes(x = Days, y = Reaction)) +
   
-  # here, we ask for separate plots for each subject in the sample, and add the points
-  facet_wrap(~Subject, nrow=3) +
+  # create separate plots for each subject in the sample
+  # and add the data points
+  facet_wrap(facets = vars(Subject), nrow = 3) +
   geom_point() +
   
-# this adds the line of best fit for the whole sample (without the random effect), 
-  # using coefficients from our simple linear model object
-  geom_line(data=cbind(sleepstudy, pred=predict(lm_sleep)), aes(y=pred)) + 
+  # this adds the line of best fit for the whole sample
+  # (without the random effect), using coefficients
+  # from our simple linear model object
+  geom_line(data = cbind(sleepstudy, pred = predict(lm_sleep)),
+            aes(y = pred)) + 
   
-  # and finally, this will add different lines of best fit for each subject
-  # as calculated in our mixed model object
-  geom_line(data=cbind(sleepstudy, pred=predict(lme_sleep1)), aes(y=pred), colour="blue")
+  # and finally, this will add different lines of best fit
+  # for each subject as calculated in our mixed model object
+  geom_line(data = cbind(sleepstudy, pred = predict(lme_sleep1)),
+            aes(y = pred), colour = "blue")
 ```
 
-Each plot represents a different subject's data. On each plot, we've added the same overall line of best fit from our original (incorrect) linear model. We've also added, in blue, individual lines for each subject. These lines move up and down the plot relative to the global line of best fit. This reflects the fact that, though all subjects are declining as they become more sleep deprived, some of them started with slower baseline reaction times, with different y-intercepts to match. Subject 310, for instance, seems to have pretty good reflexes relative to everyone else, while subject 337 isn't quite as quick on the trigger.
+Each plot represents a different subject's data. On each plot, we've added the following:
 
-The eagle-eyed among you, though, might have spotted that the *gradient* of each of these lines is still the same. This is because we've added a random intercept in our model, but have kept the same slope. This reflects an underlying assumption that the relationship between sleep deprivation and reaction time is the same - i.e. that people get worse at the same rate - even if their starting baselines differ.
+* in black we have the same overall line of best fit from our original (incorrect) linear model.
+* in blue are the individual lines of best fit for each subject. These lines move up and down the plot relative to the global line of best fit. This reflects the fact that, though all subjects are declining as they become more sleep deprived, some of them started with slower baseline reaction times, with different y-intercepts to match. Subject 310, for instance, seems to have pretty good reflexes relative to everyone else, while subject 337 isn't quite as quick on the trigger.
+
+The eagle-eyed among you, though, might have spotted that the *gradient* of each of these blue lines is still the same as the overall line of best fit. This is because we've added a random intercept in our model, but have **kept the same slope**. This reflects an underlying assumption that the relationship between sleep deprivation and reaction time is the same - i.e. that people get worse at the same rate - even if their starting baselines differ.
 
 We might not think that this assumption is a good one, however. And that's where random slopes come in.
 
-## Adding random slopes as well as random intercepts
+## Adding random slopes and random intercepts
 
 To add a random slope as well as a random intercept, we need to alter the syntax slightly for our random effect. Now, instead of `(1|Subject)`, we'll instead use `(1 + Days|Subject)`. This allows the relationship between `Days` and `Reaction` to vary between subjects.
 
 Let's fit that new model and summarise it.
 
 ```{r}
-lme_sleep2 <- lmer(Reaction ~ Days + (1 + Days|Subject), data = sleepstudy)
+lme_sleep2 <- lmer(Reaction ~ Days + (1 + Days|Subject),
+                   data = sleepstudy)
 
 summary(lme_sleep2)
 ```
 
-We can go ahead and add our new lines to our earlier facet plot:
+We can go ahead and add our new lines (in red) to our earlier facet plot:
 
 ```{r}
-ggplot(sleepstudy, aes(x=Days, y=Reaction)) +
-  facet_wrap(~Subject, nrow=3) +
+ggplot(sleepstudy, aes(x = Days, y = Reaction)) +
+  facet_wrap(facets = vars(Subject), nrow = 3) +
   geom_point() +
   
   # the global line of best fit
-  geom_line(data=cbind(sleepstudy, pred=predict(lm_sleep)), aes(y=pred)) + 
+  geom_line(data = cbind(sleepstudy, pred = predict(lm_sleep)),
+            aes(y = pred)) + 
   
-  # our previous lines of best fit, with random intercepts but constant slope
-  geom_line(data=cbind(sleepstudy, pred=predict(lme_sleep1)), aes(y=pred), colour="blue") +
+  # our previous lines of best fit, with random intercepts
+  # but constant slope
+  geom_line(data = cbind(sleepstudy, pred = predict(lme_sleep1)),
+            aes(y = pred), colour = "blue") +
   
   # our lines of best with random intercepts and random slopes
-  geom_line(data=cbind(sleepstudy, pred=predict(lme_sleep2)), aes(y=pred), colour="red") 
+  geom_line(data = cbind(sleepstudy, pred = predict(lme_sleep2)),
+            aes(y = pred), colour = "red") 
 ```
 
 While for some of our subjects, the red, blue and black lines look quite similar, for others they diverge a fair amount. Subjects 309 and 335, for instance, are displaying a remarkably flat trend that suggests they're not really suffering delays in reaction time from their sleep deprivation very much at all, while subject 308 definitely seems to struggle without their eight hours. 
@@ -147,21 +166,26 @@ While for some of our subjects, the red, blue and black lines look quite similar
 As an extra observation, let's use `geom_smooth` to add the lines of best fit that we would see if we fitted each subject with their own individual regression:
 
 ```{r}
-ggplot(sleepstudy, aes(x=Days, y=Reaction)) +
-  facet_wrap(~Subject, nrow=3) +
+#| message: false
+ggplot(sleepstudy, aes(x = Days, y = Reaction)) +
+  facet_wrap(facets = vars(Subject), nrow = 3) +
   geom_point() +
   
   # the global line of best fit
-  geom_line(data=cbind(sleepstudy, pred=predict(lm_sleep)), aes(y=pred)) + 
+  geom_line(data = cbind(sleepstudy, pred = predict(lm_sleep)),
+            aes(y = pred)) + 
   
   # random slopes only
-  geom_line(data=cbind(sleepstudy, pred=predict(lme_sleep1)), aes(y=pred), colour="blue") +
+  geom_line(data = cbind(sleepstudy, pred = predict(lme_sleep1)),
+            aes(y = pred), colour = "blue") +
   
   # random intercepts and random slopes
-  geom_line(data=cbind(sleepstudy, pred=predict(lme_sleep2)), aes(y=pred), colour="red") +
+  geom_line(data = cbind(sleepstudy, pred = predict(lme_sleep2)),
+            aes(y = pred), colour = "red") +
   
   # individual regression lines for each individual
-  geom_smooth(method="lm", se=FALSE, colour="green", linewidth=0.5)
+  geom_smooth(method = "lm", se = FALSE,
+              colour = "green", linewidth = 0.5)
 ```
 
 Here, the black line (which is the same on every plot) represents a global line of best fit - this is what we would see using **complete pooling**.
@@ -184,23 +208,24 @@ This is why the authors of the `lme4` package have deliberately excluded p-value
 So, I know I said we weren't going to go any further on this topic, but for those who are really interested, I figured I might as well include a short summary here of some of the approaches that are taken for significance testing of mixed effects models and their parameters, as a starting point for further reading.
 
 - Use **approximations for the degrees of freedom**, to yield estimated p-values. There is a companion package called `lmerTest` that allows for p-values to be calculated using two common approximations, the Satterthwaite and Kenward-Roger approximations.
-- **Likelihood ratio tests**. LRTs involve making comparisons between models, to determine whether or not a particular parameter should be included. In other words, if you compare the model with vs without the parameter, you can see how that changes the fit; this is typically used for random effects, but sometimes for fixed effects as well. When using LRTs, however, you sometimes have to refit the model using maximum likelihood estimation instead of restricted maximum likelihood estimation (`lme4` uses the latter by default) so it's not always straightforward.
-- **Markov chain Monte Carlo (MCMC) sampling**, to determine the probability distribution associated with model parameters without a requirement for degrees of freedom - unfortunately, though, this technique cannot be used when the model contains random slopes, and therefore is not used very often.
+- **Likelihood ratio tests**. LRTs involve making comparisons between models, to determine whether or not a particular parameter should be included. In other words, if you compare the model with versus without the parameter, you can see how that changes the fit; this is typically used for random effects, but sometimes for fixed effects as well. When using LRTs, however, you sometimes have to refit the model using maximum likelihood estimation instead of restricted maximum likelihood estimation (`lme4` uses the latter by default) so it's not always straightforward.
+- **Markov chain Monte Carlo (MCMC) sampling**, to determine the probability distribution associated with model parameters without a requirement for degrees of freedom. Unfortunately this technique cannot be used when the model contains random slopes, and therefore is not used very often.
 - Make **z-to-t approximations**. There are Wald *t*-values reported as standard in the `lme4` outputs; by treating them instead as *z*-values, you can find associated p-values. This approach relies on the fact that the *z* and *t* distributions are identical when degrees of freedom are infinite (so if the degrees of freedom are large enough, i.e., you have a lot of data, the approximation is decent).
 :::
 
-## Summary & additional resources
+## Summary and additional resources
 
-For our purposes this week, the main takeaway from this section is to be aware of what a random effect is, and how you might identify when a mixed effects model would be appropriate for your dataset.
+For our purposes this week, the main takeaway from this section is to be aware of what a random effect is, and how you might identify when a mixed effects model would be appropriate for your data.
 
-These sorts of datasets are very common in the biological sciences, though, so there might be several of you who are thinking about trying to use a mixed effects model already. I really recommend [this blog post](https://ourcodingclub.github.io/tutorials/mixed-models/) for further reading - it's one of my favourites for introducing mixed effects models. In addition to talking about random slopes and intercepts, it also touches on how to cope with nested and crossed factors.
+These sorts of data are very common in the biological sciences, though, so there might be several of you who are thinking about trying to use a mixed effects model already. I really recommend [this blog post](https://ourcodingclub.github.io/tutorials/mixed-models/) for further reading - it's one of my favourites for introducing mixed effects models. In addition to talking about random slopes and intercepts, it also touches on how to cope with nested and crossed factors.
 
 Here is [some more discussion](https://bookdown.org/steve_midway/DAR/random-effects.html) that might be useful to you if you're still wrapping your head around the fixed vs random distinction.
 
 **A final note on some terminology**: when searching for information on mixed effects models, you may also wish to use the term "multilevel" model, or even "hierarchical" model. The name "mixed model" refers specifically to the fact that there are both fixed and random effects within the same model; but you'll also see the same sort of model referred to as "multilevel/hierarchical", which references the fact that there are grouping variables that give the dataset a structure with different levels in it.
 
-::: {.callout-tip}
-#### Key Points
+## Key points
+
+::: callout-note
 
 - A model with both fixed and random effects is referred to as a mixed effects model
 - These models can be fitted in the `lme4` package in R, using specialised syntax for random effects

@@ -205,7 +205,7 @@ First, we create a linear model:
 
 ```{python}
 # create a linear model
-model = smf.ols(formula= "pointed_beak ~ blength",
+model = smf.ols(formula = "pointed_beak ~ blength",
                 data = early_finches_py)
 # and get the fitted parameters of the model
 lm_bks_py = model.fit()
@@ -287,7 +287,7 @@ If you forget to set the `family` argument, then the `glm()` function will perfo
 
 ```{python}
 # create a linear model
-model = smf.glm(formula= "pointed_beak ~ blength",
+model = smf.glm(formula = "pointed_beak ~ blength",
                 family = sm.families.Binomial(),
                 data = early_finches_py)
 # and get the fitted parameters of the model
@@ -573,7 +573,7 @@ The format of this function is similar to that used by the `lm()` function for l
 
 ```{python}
 # create a linear model
-model = smf.glm(formula= "test_result ~ glucose",
+model = smf.glm(formula = "test_result ~ glucose",
                 family = sm.families.Binomial(),
                 data = diabetes_py)
 # and get the fitted parameters of the model
