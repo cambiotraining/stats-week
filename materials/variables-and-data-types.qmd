@@ -72,9 +72,11 @@ This is perhaps most common in clinical studies, where researchers want to compa
 This does eliminate some of the unwanted confounding variables (more on confounds later in the course), but as you can imagine, is also quite time consuming for the researcher.
 :::
 
-## Key points
+## Summary
 
-::: {.callout-note}
+::: {.callout-tip}
+#### Key points
+
 - Variables can be categorical, with distinct groups, or continuous, taking any value along a range
 - Categorical variables can take the form of nominal or ordinal data, depending on whether there is an order to the categories
 - Continuous variables can be either interval or ratio data, depending on whether there is a "true" zero

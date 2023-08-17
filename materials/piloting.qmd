@@ -59,9 +59,10 @@ From a purely statistical point of view, there is also the possibility of increa
 Of course, as with a lot of what these course materials talk about, there are scenarios where these concerns might be outweighed. For instance, if you are working with a very rare population, it might not be feasible to discard any of the data you've collected; maintaining as large a sample as possible might be your priority. In these cases, you could choose to make adjustments in your analysis (e.g., including covariates) to account for any differences in protocol or equipment.
 :::
 
-## Key points
+## Summary
 
-::: {.callout-note}
+::: {.callout-tip}
+#### Key points
 
 - A pilot study can be considered a "trial run" for your experiment
 - The pilot can be used for testing/refining your protocol, training researchers, demonstrating feasibility and sometimes for estimating effect sizes

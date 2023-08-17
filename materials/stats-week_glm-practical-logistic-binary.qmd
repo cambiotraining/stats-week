@@ -17,7 +17,7 @@ exec(open('setup_files/setup.py').read())
 ```
 
 ::: {.callout-tip}
-## Learning outcomes
+#### Learning outcomes
 
 **Questions**
 
@@ -628,9 +628,11 @@ This tells us that the probability of having a positive diabetes test result, gi
 :::
 :::
 
-## Key points
+## Summary
 
-::: {.callout-note}
+::: {.callout-tip}
+#### Key points
+
 -   We use a logistic regression to model a binary response
 -   We can feed new observations into the model and get probabilities for the outcome
 :::

@@ -448,9 +448,10 @@ Ah. Turns out we were right to be concerned; when staff members who don't cycle 
 
 This leaves us with just one significant result: `projects ~ cycle`. But if we really were trying to report on these data, in a paper or report of some kind, we'd need to think very carefully about how much we *trust* this result, or whether perhaps we've stumbled on a false positive by virtue of running so many tests. We may also want to think carefully about whether or not we're happy with these definitions of the variables; for instance, is the number of projects completed really the best metric for productivity at work?
 
-## Key points
+## Summary
 
-::: {.callout-note}
+::: {.callout-tip}
+#### Key points
 
 - There are multiple ways to operationalise a variable, which may affect whether the variable is categorical or continuous
 - The nature of the response variable will alter what type of model can be fitted to the dataset

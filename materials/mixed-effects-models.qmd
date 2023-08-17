@@ -223,9 +223,10 @@ Here is [some more discussion](https://bookdown.org/steve_midway/DAR/random-effe
 
 **A final note on some terminology**: when searching for information on mixed effects models, you may also wish to use the term "multilevel" model, or even "hierarchical" model. The name "mixed model" refers specifically to the fact that there are both fixed and random effects within the same model; but you'll also see the same sort of model referred to as "multilevel/hierarchical", which references the fact that there are grouping variables that give the dataset a structure with different levels in it.
 
-## Key points
+## Summary
 
-::: callout-note
+::: {.callout-tip}
+#### Key points
 
 - A model with both fixed and random effects is referred to as a mixed effects model
 - These models can be fitted in the `lme4` package in R, using specialised syntax for random effects

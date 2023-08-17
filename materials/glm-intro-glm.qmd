@@ -331,9 +331,11 @@ Now, what happened behind the scenes is that the generalised linear model has ta
 
 We'll practice how to perform this analysis in the next section.
 
-## Key points
+## Summary
 
-::: {.callout-note}
+::: {.callout-tip}
+#### Key points
+
 - GLMs allow us to map a non-linear outcome to a linear model
 - The link function determines *how* this occurs, transforming the linear predictor
 :::
