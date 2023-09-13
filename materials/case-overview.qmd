@@ -1,0 +1,30 @@
+---
+title: Case studies
+---
+
+::: {.callout-tip}
+#### Learning Objectives
+
+* Define a research question, based on a given data set
+* Perform an appropriate statistical analysis on this
+* Present the main findings in a figure, accompanied by the analysis
+* Reflect on the statistical limitations
+* Make recommendations for improvements on experimental setup/analysis
+:::
+
+
+## Fish catch data
+
+The `data/fishcatch.csv` data set is from a study in Lake Längelmävesi, Finland. The data were originally collected in 1917 and now available through the [Journal of Statistics Education](https://jse.amstat.org/datasets/).
+
+The data have been reformatted slightly for the purposes of this exercise.
+
+Briefly, the data set contains morphometric and physical information on 7 different species of fish.
+
+
+## Summary
+
+::: {.callout-tip}
+#### Key points
+
+:::

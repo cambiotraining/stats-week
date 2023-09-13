@@ -43,3 +43,5 @@ book:
         - materials/stats-week_glm-practical-logistic-binary.qmd
         - materials/mixed-effects-models.qmd
     - part: "Case studies"
+      chapters:
+        - materials/case-overview.qmd

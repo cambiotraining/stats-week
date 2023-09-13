@@ -1,0 +1,530 @@
+---
+title: "Fishcatch"
+format: html
+---
+
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+library(broom)
+library(ggResidpanel)
+```
+
+The `data/fishcatch.csv` data set is from a study in Lake Längelmävesi, Finland. The data were originally collected in 1917 and now available through the [Journal of Statistics Education](https://jse.amstat.org/datasets/).
+
+The data have been reformatted slightly for the purposes of this exercise.
+
+Briefly, the data set contains morphometric information on 7 different species of fish.
+
+## Step 1: Identify variables and research question
+
+### Load the data
+
+First, we load the data:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| message: false
+fishcatch <- read_csv("data/fishcatch.csv")
+```
+:::
+
+### Check the variable names and types
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+fishcatch
+```
+:::
+
+We can observe the following:
+
+* the data set contains `r fishcatch %>%  ncol()` variables and `r fishcatch %>% nrow()` observations.
+* we have various continuous numerical variables (`weight`, `std_length`, `fork_length`, `total_length`)
+* we have percentage/ratio data (`height_percent`, `width_percent`)
+* we have categorical data (`species`, `sex`)
+* there is an observation number (`obs`, which is not informative for our analysis)
+* there are missing data, encoded as `NA`
+
+## Step 2: Describe the data
+
+### Data overview
+
+First, I like to get an idea of the type of observations I've got. It's really useful to have some counts on the different groups, so if there is anything strange/unexpected about the data then at least that's clear.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+fishcatch %>% 
+  summary()
+```
+:::
+
+Things that stand out are:
+
+* there is a `weight` measurement of `0.0`. That can't be right and probably means "missing".
+* there are missing values in the data
+
+We know that there are 7 different fish species measured. It's good to see how many observations there are in each group.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+fishcatch %>% 
+  count(species)
+```
+
+:::
+
+This illustrates the importance of this check. There is large variability in the number of observations. Were we to compare, for example, the average `total_length` between the different species then this average would be based on vastly different sample sizes.
+
+Another categorical variable is `sex`, so let's have a look at that:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+fishcatch %>% 
+  count(sex)
+```
+:::
+
+Not all observations have a sex indication; if we're to look at differences between females and males, particularly across species, then we need to consider this.
+
+### Plot the data
+
+Plotting the data can really help to get a sense of how the data are structured and distributed. It's also a great way of spotting any potential trends. The `fishcatch` data set is relatively small, particularly in terms of number of variables. This makes things a bit easier, since we don't have endless combinations of variables we can plot against each other.
+
+Where to start though? A logical starting point would be to plot some of the morphometric measurements for each `species`. There are three length measurements and here I'm plotting `total_length`. Using a boxplot is helpful because it gives a visual indication on how the data are distributed:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ggplot(fishcatch,
+       aes(x = species, y = total_length)) +
+  geom_boxplot()
+```
+
+:::
+
+I do very much like seeing the actual *data*, so I'm overlaying this as follows:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ggplot(fishcatch,
+       aes(x = species, y = total_length)) +
+  geom_boxplot() +
+  geom_jitter(alpha = 0.6, width = 0.1)
+```
+:::
+
+Remember that the data also contains information on `sex` and it could very well be that some of these morphometric measurement are dependent on this. One way of visualising this is by creating subplots or facets. But since this variable contains many missing values, we need to remove these prior to plotting.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+fishcatch %>% 
+  filter(!is.na(sex)) %>% 
+  ggplot(aes(x = sex, y = total_length)) +
+  geom_boxplot() +
+  geom_jitter(alpha = 0.6, width = 0.1) +
+  facet_wrap(facets = vars(species))
+```
+
+:::
+
+So far, we have focussed on `total_length`, but there are more morphometric and biological measurements. Let's see if there is any relationship between them. For example, looking at `weight` against `total_length`.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+ggplot(fishcatch,
+       aes(x = total_length,
+           y = weight,
+           colour = species)) +
+  geom_point()
+```
+
+:::
+
+We can see that there is quite some variability in `weight` across the species. Hardly surprising. But it can easily obscure patterns, because the data are across a wide range.
+
+Let's focus on the two species with the largest number of observations, which have a comparable body length: `common_bream` and `european_perch`.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| warning: false
+fishcatch %>% 
+  filter(species %in% c("common_bream", "european_perch")) %>% 
+  ggplot(aes(x = total_length,
+             y = weight,
+             colour = species)) +
+  geom_point()
+```
+:::
+
+### Dependencies and correlations
+
+The morphometric measurements that were taken (`std_length`, `fork_length` and `total_length`) are not independent. A fish can't have a standard or fork length that is more than its total length, for example.
+
+There is a high chance that there is some correlation between these variables. So let's check this. Note that you can only calculate correlations between numerical variables, so we need to remove any non-numerical variables first.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+fishcatch %>% 
+  # unselect columns to exclude
+  select(-obs, -species, -sex) %>% 
+  cor()
+```
+
+:::
+
+This returns a missing value for `weight` vs the other variables. If you recall from the summary statistics (and can spot in the graph above), there is at least one `weight` value of 0. Presumably that was used to encode a missing value, because a weight of 0 is of course not biologically possible.
+
+So we need to remove this value before we calculate the correlations. To avoid issues going forward, we'll update the data set omitting the observations where `weight` is zero. In the end there is only one problematic observation! After removing it, we re-calculate the correlation coefficients.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+fishcatch %>% 
+  filter(weight == 0)
+```
+
+```{r}
+fishcatch <- fishcatch %>% 
+  # keep rows where weight is not zero
+  filter(weight != 0)
+```
+
+Re-calculate the correlation coefficients:
+
+```{r}
+fishcatch %>% 
+  select(-obs, -species, -sex) %>% 
+  cor()
+```
+:::
+
+From this correlation matrix we can deduce that there is a pretty high correlation between `weight` and the three length measurements (around $\rho = 0.92$).
+
+Importantly, we can see that there is a very high correlation between the three length measurements themselves. This makes sense, since they are physically very similar. We'll see if this has any impact on our statistical analysis later on.
+
+### Consider whether there appear to be any significant effects of any of the variables
+
+It looks like there could be a significant difference in `total_length` between the different species. If this is also dependent on the sex is less clear. There may be some small difference between females and males (e.g. in `white_bream`) but the number of observations are low and the difference is not clear-cut.
+
+### Consider your research question
+
+In a real scientific setting you would of course not consider your research question after you have collected your data. So although we're considering it a bit late in the context of this analysis, the thought that goes into it remains the same. Looking back at the [Research questions](https://cambiotraining.github.io/stats-week/materials/research-questions.html) chapter, we need to ensure that the question is focused, researchable, relevant, feasible, original and complex.
+
+In this case I'm going to exclude some of the data, to ensure the analysis remains clear. I'm going to focus on the potential relationship between `weight` and `total_length`, considering only the `common_bream` and `european_perch` species.
+
+My question would be:
+
+> Can total length be used to predict the weight in common bream and European perch? If so, are there differences between the two species?
+
+## Step 3: Perform tests and or fit models
+
+Before we start the analysis in earnest, we'll select just the required data.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+subcatch <- fishcatch %>% 
+  filter(species %in% c("common_bream", "european_perch"))
+```
+:::
+
+We're looking at a continuous predictor and a continuous response variable, so our best bet at this point is a linear model. Who'd have thunk? Let's visualise this first.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ggplot(subcatch,
+       aes(x = total_length, y = weight,
+           colour = species)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+:::
+
+Hmmm, that looks alright for the `common_bream` but pretty awful for the `european_perch` data. The latter has a tiddler weighing `r subcatch %>% arrange(weight) %>% slice(1) %>% pull(weight)` grams, with a length of `r subcatch %>% arrange(weight) %>% slice(1) %>% pull(total_length)` cm. Let's not judge size, but it is annoying.
+
+That said, the `european_perch` measurements have quite some measured values at the lower scale, whereas the `common_bream` does not. One explanation could be that there were juvenile European perches in the lake, but in the absence of further information (which we're unlikely to get from 1917 researchers), all we can do is guess.
+
+### Select a test appropriate to the data that you have
+
+The linear model we've visualised above takes into account the `total_length` and `weight:total_length` interaction. Note that it does not consider the `std_length` and `fork_length` variables. Whether this is necessary, we don't really know. Nor do we know if the assumptions of a linear model are met. More on that later.
+
+Let's look and see if our model makes any sense, statistically speaking.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+lm_full <- lm(weight ~ total_length * species,
+              data = subcatch)
+```
+
+```{r}
+anova(lm_full)
+```
+
+:::
+
+The `total_length:species` interaction is statistically significant, so we can't ignore it. It means that the effect of `weight` on `total_length` is dependent on `species`.
+
+::: {.callout-note collapse="true"}
+
+Here the research question specifically stated the relationship between `total_length` and `weight`. What if we wanted to take into account the `std_length` and `fork_length` variables as well? The linear model would become rather long if we accounted for *all* the possible interactions. We could however define a model that at least took these two additional variables into account as main effects:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+#| eval: false
+lm(weight ~ std_length + fork_length + total_length * species,
+              data = subcatch)
+```
+:::
+
+We could then use **backwards stepwise elimination** to arrive at the most parsimonious model.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+step(lm(weight ~ std_length + fork_length + total_length * species,
+              data = subcatch))
+```
+:::
+
+Using this approach we arrive at a final model that takes into account the `species` term as well as the `total_length:species` interaction. This makes sense from our previous exploration: the three length terms are highly correlated and `total_length` incorporates the `std_length` and `fork_length` values. As such, these two variables do not contribute markedly to explaining the data, since most of that is already done by `total_length`.
+:::
+
+### Check assumptions of tests/models
+
+Let's check the assumptions of our `weight ~ total_length * species` model.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+resid_panel(lm_full,
+            plots = c("resid", "qq", "ls", "cookd"),
+            smoother = TRUE)
+```
+
+:::
+
+Oh dear. The diagnostic plots do not look very good. To be honest, it's not a huge surprise, given what we saw before in the `european_perch` data.
+
+Problems:
+
+* our residuals are not very homogenous
+* the Q-Q plot doesn't look great with deviation away from the diagonal
+* the location-scale plot suggest that there are problems with equality of variance
+* there is one value with a Cook's d value of > 0.5, so that is a data point I'd check for unduly influence
+
+### Reassess model
+
+Given the issues with the data, we can't just fit a linear model. We could see if we can transform the data in such a way that we can fit a linear model.
+
+Upside: we can use a linear model. Downside: interpreting the model becomes a bit trickier.
+
+One option would be to log-transform the `weight` variable. The best way to show why this is useful is to illustrate it:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+ggplot(subcatch,
+       aes(x = total_length, y = log(weight),
+           colour = species)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+:::
+
+Our tiddler data point (most left) has a reduced influence on the line of best fit for the `european_perch`. The lower-weight values are also much closer to the line.
+
+As such, we could redefine the model as follows:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+lm_full_log <- lm(log(weight) ~ total_length * species,
+              data = subcatch)
+```
+
+```{r}
+anova(lm_full_log)
+```
+:::
+
+The `total_length:species` interaction remains statistically significant, so we still can't ignore it. But instead of using `weight` as the response variable, we are now using the `log(weight)` value as a response.
+
+Let's re-evaluate the assumptions to see if they have improved.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+resid_panel(lm_full_log,
+            plots = c("resid", "qq", "ls", "cookd"),
+            smoother = TRUE)
+```
+
+:::
+
+#### Influential points
+
+That one data point really seems to throw a spanner in the works. So let's look at that a bit closer.
+
+We can extract the Cook's d values and look for the highest one.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+lm_full_log %>%
+  augment() %>%
+  arrange(desc(.cooksd))
+```
+:::
+
+Perhaps unsurprisingly, this value comes from our tiddler, `obs 104`.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+fishcatch %>% arrange(weight)
+```
+:::
+
+We can remove this data point and re-run the analysis. However, you have to be careful doing this and generally be able to justify removing "outliers". Just because a data point does not fit with your proposed model, that does not mean you can just remove it. If we'd have access to the publication / researchers then we would ask them if there was anything unusual that they remembered about this particular sample.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+subcatch_outlier <- subcatch %>% 
+  filter(obs != 104)
+```
+
+```{r}
+lm_outlier_log <- lm(log(weight) ~ total_length * species,
+                     data = subcatch_outlier)
+```
+
+```{r}
+anova(lm_outlier_log)
+```
+
+```{r}
+resid_panel(lm_outlier_log,
+            plots = c("resid", "qq", "ls", "cookd"),
+            smoother = TRUE)
+```
+
+:::
+
+### Cube root to the rescue?
+
+The assumptions above are still pretty rubbish. So clearly the log transformation (with our without the influential point) is not really the way to go.
+
+We could try a different transformation, where we take the cube root of `weight`. I know what you're thinking at this point - how can make these decisions and what is the impact on the interpretation?
+
+I admit that things are a bit fuzzy at this point. From our earlier look at the data we already had reservations about the linearity of the relationship `weight ~ total_length`. We tried to fix this with transforming the data, which didn't really work. Below you'll see how the relationship `weight^(1/3) ~ total_length` has much better diagnostic plots etc. But the troubling thing is:
+
+> Every one unit increase in your predictor variable, what does this mean in terms of the response variable?
+
+What does a unit increase affecting $\sqrt[3]{weight}$ mean? We'd be much better off performing a non-linear regression analysis instead.
+
+For now, let's see what all of this looks like. For ease, we'll create a new variable that contains the values of $\sqrt[3]{weight}$.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+subcatch <- subcatch %>%
+  mutate(weight_cuberoot = weight ^ (1/3))
+```
+
+```{r}
+subcatch %>% 
+  ggplot(aes(x = total_length,
+             y = weight_cuberoot,
+             colour = species)) +
+  geom_point()
+```
+:::
+
+Next, we can create a linear model based on this response variable and check the assumptions.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+lm_cuberoot <- lm(weight_cuberoot ~ total_length * species,
+                  data = subcatch)
+```
+
+```{r}
+anova(lm_cuberoot)
+```
+
+:::
+
+Here the interaction is no longer significant, because the response variable is on a different scale. Part of the issue with simply transforming the data is that it also transforms the residuals. This clearly has an effect here.
+
+But, let's remove the interaction and look again:
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+lm_cuberoot_red <- lm(weight_cuberoot ~ total_length + species,
+                      data = subcatch)
+```
+
+```{r}
+anova(lm_cuberoot_red)
+```
+:::
+
+The `total_length` and `species` main effects remain statistically significant, so let's look at the assumptions.
+
+::: {.panel-tabset group="language"}
+## R
+
+```{r}
+resid_panel(lm_cuberoot_red,
+            plots = c("resid", "qq", "ls", "cookd"),
+            smoother = TRUE)
+```
+
+### Assess results of model fit

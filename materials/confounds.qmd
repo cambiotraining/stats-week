@@ -165,7 +165,7 @@ It's as simple as including the covariate of no interest in the model as if it w
 ## Summary
 
 ::: {.callout-tip}
-#### Key Points
+#### Key points
 
 - A confounding variable covaries with the predictor(s) and outcome variables
 - There are multiple sources of confounds, including the environment, researcher or technical error, and features of the sample
