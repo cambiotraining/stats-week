@@ -12,6 +12,17 @@ title: Case studies
 * Make recommendations for improvements on experimental setup/analysis
 :::
 
+## IT Developer salary
+
+The developer salary data (`data/developer-salary.csv`) was collected in 2020, via a survey of European (in particular, German) IT specialists and developers. 
+
+It contains information about salary and job roles, as well as demographic variables. Following the Covid-19 pandemic and lockdowns, survey respondents also reported whether they were made redundant during 2020.
+
+The data have been cleaned and reformatted for the purposes of this course.
+
+The original data can be found [here](https://www.kaggle.com/datasets/parulpandey/2020-it-salary-survey-for-eu-region). 
+
+There are multiple research questions that could be applied to the IT developer salary data, which can be addressed by fitting different models.
 
 ## Fish catch data
 
@@ -20,11 +31,3 @@ The `data/fishcatch.csv` data set is from a study in Lake Längelmävesi, Finlan
 The data have been reformatted slightly for the purposes of this exercise.
 
 Briefly, the data set contains morphometric and physical information on 7 different species of fish.
-
-
-## Summary
-
-::: {.callout-tip}
-#### Key points
-
-:::
