@@ -10,8 +10,6 @@ Uncomment the sections relevant for your materials, and add additional instructi
 Note that we use tabsets to provide instructions for all three major operating systems.
 -->
 
-::: {.callout-tip level=2}
-
 ## Data
 
 The data used in these materials is provided as a zip file. 
