@@ -1,32 +1,61 @@
 ---
 title: "Statistical analysis and experimental design"
-author: "Vicki Hodgson, Martin van Rongen"
+author: "Vicki Hodgson and Martin van Rongen"
 date: today
 number-sections: false
 ---
 
 ## Overview 
 
-Include a one-paragraph summary of the course here. 
+This week-long course is aimed at people with little or no experience using statistical analyses in research. It introduces participants to core concepts in statistics and experimental design, aimed at ensuring that the resulting data is able to address the research question using appropriate statistical methods.
+
+The interactive course gives participants a hands-on, applied foundation in statistical data analysis and experimental design. Group exercises and discussions are combined with short lectures that introduce key theoretical concepts. Computational methods are used throughout the course, using the R programming language. Formative assessment exercises allow participants to test their understanding throughout the course and encourage questions and critical thinking.
+
+By the end of the course participants will be able to critically evaluate and design effective research questions, linking experimental design concepts to subsequent statistical analyses. It will allow participants to make informed decisions on which statistical tests are most appropriate to their research questions. The course will provide a solid grounding for further development of applied statistical competencies.
 
 ::: {.callout-tip}
 ### Learning Objectives
 
-- List course learning objectives here.
-- These describe concepts the learners should grasp and techniques they should be able to use by the end of the course.
-- You can think of these as completing the phrase "after this course, the participant should be able to..."
-- They are not supposed to be as detailed as the learning objectives of each section, but more high-level.
+During this course you will learn about:
+
+* One and two sample hypothesis tests
+* ANOVA
+* Simple linear Regression
+* ANCOVA
+* Linear Models
+* Model selection techniques
+* Power Analyses
+* Practices in experimental design that lead to high quality research
+* What to do with more advanced analysis techniques for experiments with unusual or complex designs
+* How to take power analysis into consideration in your experimental design
+* How to implement piloting in your experiments
+
+After this course you should be able to:
+
+* Analyse datasets using standard statistical techniques
+* Know when each test is and is not appropriate
+* Link experimental design to your statistical analysis strategy
+* Formulate good research questions
+* Identify common design pitfalls, and how to avoid or mitigate them
+* Operationalise variables effectively
+* Identify and deal with confounding variables and pseudoreplication
 :::
 
 
 ### Target Audience
 
-Brief description of target audience here.
+The course is aimed at people at postgraduate level who are involved in research.
+
+Applicants are expected to have a working knowledge of R and must complete a prerequisite quiz as part of the registration process.
+
+The course is open to Postdocs and Staff members from the University of Cambridge, Affiliated Institutions and other external Institutions or individuals.
 
 
 ### Prerequisites
 
-Detail any prerequisite skills needed to attend this course, with links to other relevant materials/courses if possible.
+Working knowledge of R and the `tidyverse` package (assessed through a short quiz provided before acceptance on the course).
+
+This course is not suitable for people who have completed either the [Core Statistics](https://training.csx.cam.ac.uk/bioinformatics/course/bioinfo-coreStatsR) or [Experimental Design for Statistical Analysis](https://training.csx.cam.ac.uk/bioinformatics/course/bioinfo-expdes-sa) courses, since significant portions of the course borrow from these stand-alone courses.
 
 
 <!-- Training Developer note: comment the following section out if you did not assign levels to your exercises -->
@@ -49,47 +78,10 @@ These examples include icons with links to GitHub and Orcid.
 
 About the authors:
 
-- **Hugo Tavares **
-  <a href="https://orcid.org/0000-0001-9373-2726" target="_blank"><i class="fa-brands fa-orcid" style="color:#a6ce39"></i></a> 
-  <a href="https://github.com/tavareshugo" target="_blank"><i class="fa-brands fa-github" style="color:#4078c0"></i></a>  
-  _Affiliation_: Bioinformatics Training Facility, University of Cambridge  
-  _Roles_: writing - original draft; conceptualisation; coding
+- **Vicki Hodgson** \
+  *Affiliation*: Bioinformatics Training Facility, University of Cambridge\
+  *Roles*: writing - original draft; conceptualisation; coding; creation of synthetic datasets
 - **Martin van Rongen**
   <a href="https://github.com/mvanrongen" target="_blank"><i class="fa-brands fa-github" style="color:#4078c0"></i></a>  
   _Affiliation_: Bioinformatics Training Facility, University of Cambridge  
   _Roles_: writing - review & editing; conceptualisation; coding
-
-
-## Citation
-
-<!-- We can do this at the end -->
-
-Please cite these materials if:
-
-- You adapted or used any of them in your own teaching.
-- These materials were useful for your research work. For example, you can cite us in the methods section of your paper: "We carried our analyses based on the recommendations in _TODO_.".
-
-You can cite these materials as:
-
-> TODO
-
-Or in BibTeX format:
-
-```
-@Misc{,
-  author = {},
-  title = {},
-  month = {},
-  year = {},
-  url = {},
-  doi = {}
-}
-```
-
-
-## Acknowledgements
-
-<!-- if there are no acknowledgements we can delete this section -->
-
-- List any other sources of materials that were used.
-- Or other people that may have advised during the material development (but are not authors).

@@ -11,11 +11,6 @@ Note that we use tabsets to provide instructions for all three major operating s
 -->
 
 ::: {.callout-tip level=2}
-## Workshop Attendees
-
-If you are attending one of our workshops, we will provide a training environment with all of the required software and data.  
-If you want to setup your own computer to run the analysis demonstrated on this course, you can follow the instructions below.
-:::
 
 ## Data
 
@@ -23,22 +18,12 @@ The data used in these materials is provided as a zip file.
 Download and unzip the folder to your Desktop to follow along with the materials.
 
 <!-- Note for Training Developers: add the link to 'href' -->
-<a href="">
+<a href="./data.zip">
   <button class="btn"><i class="fa fa-download"></i> Download</button>
 </a>
 
 ## Setup
 
-### Quarto
-
-To develop and render the course materials website, you will need to install _Quarto_:
-
-- Download and install [Quarto](https://quarto.org/docs/get-started/) (available for all major OS). 
-- If you are developing materials using executable `.qmd` documents, it is recommended that you also install the extensions for your favourite IDE (e.g. RStudio, VS Code).
-- If you are developing materials using **JupyterLab** or **Jupyter Notebooks**, please install [Jupytext](https://jupytext.readthedocs.io/en/latest/install.html).
-  - Use the [paired notebook](https://jupytext.readthedocs.io/en/latest/paired-notebooks.html) feature to have synchronised `.ipynb`/`.qmd` files. Only `.qmd` files should be pushed to the repository (`.ipynb` files have been added to `.gitignore`).
-
-<!--
 ### R and RStudio
 
 ::: {.tabset group="os"}
@@ -64,7 +49,6 @@ Download and install all these using default options:
 - Download the [RStudio](https://www.rstudio.com/products/rstudio/download/#download) installer for your distribution and install it using your package manager.
 
 :::
--->
 
 
 <!--
