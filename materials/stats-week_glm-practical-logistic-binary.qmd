@@ -254,7 +254,7 @@ $Y = \beta_0 + \beta_1X$
 
 We can now map this to our non-linear relationship via the **logistic link function**:
 
-$Y = \frac{\exp(X)}{1 + \exp(\beta_0 + \beta_1X)}$
+$Y = \frac{\exp(\beta_0 + \beta_1X)}{1 + \exp(\beta_0 + \beta_1X)}$
 
 Note that the $\beta_0 + \beta_1X$ part is identical to the formula of a straight line.
 
