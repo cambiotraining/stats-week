@@ -44,4 +44,4 @@ book:
         - materials/mixed-effects-models.qmd
     - part: "Case studies"
       chapters:
-        - materials/case-overview.qmd
+        - materials/edsa_case-studies.qmd

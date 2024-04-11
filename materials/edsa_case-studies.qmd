@@ -1,0 +1,66 @@
+---
+title: "Case studies"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This section provides an opportunity to put the learned content into practice. To track our progress we start this exercise at the beginning of the course and will revisit it throughout. We are not expecting perfectly formed experiments, so don't hold back!
+
+Choose a case study, and design the experiment you would conduct to answer the research question.
+
+Consider:
+
+- Whether/how you might pilot the study
+- What manipulations you plan to make
+- What measurements you’ll take
+- What analysis you plan to run
+
+## Case Study 1 - Plant growth & light colour
+
+It is established that both the intensity and colour of light (balance of red, green and blue light) can affect plant growth. However, you’re interested in knowing how this relationship holds specifically in common varieties of British beans. 
+
+To investigate this, you have access to the following resources, plus other reasonable resources:
+
+- Seedlings (unlimited supply) from 3 different common bean varieties.
+- Three greenhouses to plant seedlings, with a capacity of 150 plants each.
+- Grow lights (unlimited supply) that allow you to vary the ratio of green, red and blue light as desired. They come in one of three intensities: 500, 1000 or 2500 lumens per square foot.
+
+<!-- Some additional considerations: -->
+
+<!-- - Not all plants will survive; around 5% of seedlings in a greenhouse are expected to die, at random. -->
+<!-- - How will you operationalise growth? Plants typically grow differently depending on their location in a greenhouse – for example, plants near the centre will grow fewer branches/shoots, as they grow upward rather than outward. -->
+
+## Case Study 2 - Teaching experience in university lecturers
+
+A university is interested in testing whether a lecturer’s number of years of teaching experience can predict the quality of their teaching. 
+
+To investigate this, you have access to the following, plus other reasonable information or resources:
+
+- Anonymised student grades from the last 5 years for 20 lecturers at the university. Eleven of these are from humanities, and nine from life sciences. Each year, each lecturer teaches between 50-100 students.
+- The ability to distribute surveys to current students for all 20 lecturers.
+- Demographic information for the lecturers, such as gender, date of birth, the year they began teaching and the number of years spent in research.
+
+<!-- Some considerations: -->
+
+<!-- - What is *n*? -->
+<!-- - Are there any covariates of no interest? -->
+<!-- - How do you operationalise “quality of teaching”? -->
+
+## Case Study 3 - Caffeine and memory in rats
+
+An animal psychologist is interested in determining the effects of caffeine consumption on rats’ ability to complete memory tasks.
+
+To investigate this, you have access to the following, plus other reasonable resources:
+
+- Up to 50 naïve rats that have never been trained on memory tasks before.
+- The ability to give the rats controlled doses of caffeine, and/or a placebo.
+- Three common tasks for memory in rats: the Morris water maze, for spatial memory; the radial arm maze, for working memory; and an object recognition task.
+
+<!-- When planning, consider: -->
+
+<!-- - How will you gauge baseline memory ability in the rats? -->
+<!-- - Will you use a repeated or independent measures design? -->
+<!-- - Should counterbalancing be used? What about blinding? -->
+<!-- - How can power analysis help you to adhere to the "Reduction" principle in animal research (i.e., minimising the number of animals used)? -->
