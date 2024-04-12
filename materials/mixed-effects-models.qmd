@@ -42,9 +42,19 @@ library(lme4)
 :::
 :::
 
-## The sleep study data
+## What is a random effect?
 
-As an example, we're going to use the internal `sleepstudy` dataset from the `lme4` package in R (this dataset is also provided as a `.csv` file, if you'd prefer to read it in or are using Python). This is a simple dataset taken from a real study that investigated the effects of sleep deprivation on reaction times in 18 subjects, and has just three variables: `Reaction`, reaction time in milliseconds; `Days`, number of days of sleep deprivation; and `Subject`, subject ID.
+There are a few things that characterise a random effect:
+
+- All random effects are **categorical** variables or factors
+- They create clusters or groups within your dataset (i.e., **non-independence**)
+- The levels/groups of that factor have been chosen "at random" from a larger set of possible levels/groups - this is called **exchangeability**
+- Usually, we are **not interested in the random effect as a predictor**; instead, we are trying to account for it in our analysis
+- We expect to have **5 or more distinct levels/groups** to be able to treat a variable as a random effect
+
+## The sleepstudy data
+
+As a worked example, we're going to use the internal `sleepstudy` dataset from the `lme4` package in R (this dataset is also provided as a `.csv` file, if you'd prefer to read it in or are using Python). This is a simple dataset taken from a real study that investigated the effects of sleep deprivation on reaction times in 18 subjects, and has just three variables: `Reaction`, reaction time in milliseconds; `Days`, number of days of sleep deprivation; and `Subject`, subject ID.
 
 ```{r}
 #| message: false
@@ -175,7 +185,7 @@ ggplot(sleepstudy, aes(x = Days, y = Reaction)) +
   geom_line(data = cbind(sleepstudy, pred = predict(lm_sleep)),
             aes(y = pred)) + 
   
-  # random slopes only
+  # random intercepts only
   geom_line(data = cbind(sleepstudy, pred = predict(lme_sleep1)),
             aes(y = pred), colour = "blue") +
   
@@ -213,6 +223,112 @@ So, I know I said we weren't going to go any further on this topic, but for thos
 - Make **z-to-t approximations**. There are Wald *t*-values reported as standard in the `lme4` outputs; by treating them instead as *z*-values, you can find associated p-values. This approach relies on the fact that the *z* and *t* distributions are identical when degrees of freedom are infinite (so if the degrees of freedom are large enough, i.e., you have a lot of data, the approximation is decent).
 :::
 
+## Exercises
+
+### Exercise 1 - Ferns
+
+{{< level 1 >}}
+
+A plant scientist is investigating how light intensity affects the growth rate of young fern seedlings.
+
+He cultivates 240 seedlings in total in the greenhouse, split across ten trays (24 seedlings in each). Each tray receives one of three different light intensities, which can be varied by changing the settings on purpose-built growlights.
+
+The height of each seedling is then measured repeatedly at five different time points (days 1, 3, 5, 7 and 9).
+
+What are our variables? What's the relationship we're interested in, and which of the variables (if any) should be treated as random effects?
+
+![Predictor variables](images/example2_1.png){fig-alt="Graphic with three variables listed: Tray, Itensity and Timepoint"}
+
+::: {.callout-note collapse="true"}
+#### Answer
+
+There are four things here that vary: `tray`, `light intensity`, `timepoint` and `height`. 
+
+We're interested in the relationship between growth rate and light intensity. This makes our first two predictor variables easier to decide about:
+
+![Fixed versus random effects](images/example2_2.png){fig-alt="Graphic with three variables listed: Tray, Itensity and Timepoint. Tray is now identified as a random effect, while Intensity and Timepoint are identified as fixed effects."}
+
+The variable `tray` is a random effect here. We are not interested in differences between these 10 particular trays that we've grouped our seedlings into, but we do need to recognise the non-independence created by these natural clusters - particularly because we've applied the "treatment" (changes in light intensity) to entire trays, rather than to individual seedlings.
+
+In contrast, `light intensity` - though a categorical variable - is a fixed effect. We are specifically interested in comparing across the three light intensity levels, so we don't want to share information between them; we want fixed estimates of the differences between the group means here.
+
+Perhaps the trickiest variable to decide about is `time`. Sometimes, we will want to treat time as a random effect in mixed effects models. And we have enough timepoints to satisfy the requirement for 5+ levels in this dataset. 
+
+But in this instance, where we are looking at growth rate, we have a good reason to believe that `time` is an important predictor variable, that may have an interesting interaction with `light intensity`. 
+
+Further, our particular levels of `time` - the specific days that we have measured - are not necessarily exchangeable, nor do we necessarily want to share information between these levels.
+
+In this case, then, `time` would probably be best treated as a fixed rather than random effect. 
+
+However, if we were not measuring a response variable that changes over time (like growth), that might change. If, for instance, we were investigating the relationship between light intensity and chlorophyll production in adult plants, then measuring across different time points would be a case of technical replication instead, and `time` would be best treated as a random effect. **The research question is key in making this decision.**
+:::
+
+### Exercise 2 - Wolves
+
+{{< level 1 >}}
+
+An ecologist is conducting a study to demonstrate how the presence of wolves in US national parks predicts the likelihood of flooding. For six different national parks across the country that contain rivers, they record the estimated wolf population, and the average number of centimetres by which the major river in the park overflows its banks, for the last 10 years - for a total of 60 observations.
+
+What's the relationship of interest? Is our total *n* really 60?
+
+![Predictor variables](images/example3_1.png){fig-alt="Graphic with three variables listed: Wolf population, National park and Year."}
+
+::: {.callout-note collapse="true"}
+#### Answer
+
+Though we have 60 observations, it would of course be a case of pseudoreplication if we failed to understand the clustering within these data.
+
+We have four things that vary: `wolf population`, `flood depth`, `national park` and `year`.
+
+With `flood depth` as our response variable, we already know how to treat that. And by now, you've hopefully got the pattern that our continuous effect of interest `wolf population` will always have to be a fixed effect. 
+
+![Fixed versus random effects](images/example3_2.png){fig-alt="Graphic with three variables listed: Wolf population, National park and Year. Wolf population is now identified as a fixed effect, while National park and Year are identified as random effects."}
+
+But there's also `year` and `national park` to contend with, and here, we likely want to treat both as random effects.
+
+We have measured across several national parks, and over a 10 year period, in order to give us a large enough dataset for sufficient statistical power - these are technical replicates. But from a theoretical standpoint, the exact years and the exact parks that we've measured from, probably aren't that relevant. It's fine if we share information across these different levels.
+
+Of course, you might know more about ecology than me, and have a good reason to believe that the exact years *do* matter - that perhaps something fundamental in the relationship between `flood depth ~ wolf population` really does vary with year in a meaningful way. But given that our research question does not focus on change over time, both `year` and `national park` would be best treated as random effects given the information we currently have.
+:::
+
+### Exercise 3 - Primary schools
+
+{{< level 2 >}}
+
+An education researcher is interested in the impact of socio-economic status (SES) and gender on students' primary school achievement.
+
+For twelve schools across the UK, she records the following variables for each child in their final year of school (age 11):
+
+- Standardised academic test scores
+- Whether the child is male or female
+- Standardised SES score, based on parental income, occupation and education
+
+The response variable in this example is the standardised academic test scores, and we have two predictors: `gender` and `SES score`. Note that we have also tested these variables across three schools.
+
+![Predictor variables](images/example1_1.png)
+
+Which of these predictors should be treated as fixed versus random effects? Are there any other "hidden" grouping variables that we should consider, based on the description of the experiment?
+
+::: {.callout-note collapse="true"}
+#### Answer
+
+We care about the effects of `gender` and `SES score`. We might also be interested in testing for the interaction between them, like so: `academic test scores ~ SES + gender + SES:gender`.
+
+This helps us to determine straight away that both `gender` and `SES score` are fixed effects - we're interested in them directly. Supporting this is the fact that we have restricted `gender` here to a categorical variable with only two levels, while `SES score` is continuous - neither of these could be treated as random effects.
+
+However, `school` should be treated as a random effect. We collected data from 12 different schools, but we are not particularly interested in differences between these specific schools. In fact we'd prefer to generalise our results to students across all UK primary schools, and so it makes sense to share information across the levels. But we can't neglect `school` as a variable in this case, as it does create natural clusters in our dataset.
+
+![Fixed versus random effects](images/example1_2.png)
+
+We also have two possible "hidden" random effects in this dataset, however.
+
+The first is `classroom`. If the final year students are grouped into more than one class within each school, then they have been further "clustered". Students from the same class share a teacher, and thus will be more similar to one another than to students in another class, even within the same school.
+
+The `classroom` variable would in fact be "nested" inside the `school` variable - more on nested variables in later sections of this course.
+
+Our other possible hidden variable is `family`. If siblings have been included in the study, they will share an identical SES score, because this has been derived from the parent(s) rather than the students themselves. Siblings are, in this context, technical replicates! One way to deal with this is to simply remove siblings from the study; or, if there are enough sibling pairs to warrant it, we could also treat `family` as a random effect.
+:::
+
 ## Summary and additional resources
 
 For our purposes this week, the main takeaway from this section is to be aware of what a random effect is, and how you might identify when a mixed effects model would be appropriate for your data.
@@ -223,11 +339,11 @@ Here is [some more discussion](https://bookdown.org/steve_midway/DAR/random-effe
 
 **A final note on some terminology**: when searching for information on mixed effects models, you may also wish to use the term "multilevel" model, or even "hierarchical" model. The name "mixed model" refers specifically to the fact that there are both fixed and random effects within the same model; but you'll also see the same sort of model referred to as "multilevel/hierarchical", which references the fact that there are grouping variables that give the dataset a structure with different levels in it.
 
-## Summary
-
 ::: {.callout-tip}
 #### Key points
 
+- We would fit a random effect if we have a categorical variable, with 5+ levels, that represent non-independent "clusters" or "groups" within the data
+- Random effects are estimated by sharing information across levels/groups, which are typically chosen "at random" from a larger set of exchangeable levels                                             
 - A model with both fixed and random effects is referred to as a mixed effects model
 - These models can be fitted in the `lme4` package in R, using specialised syntax for random effects
 - For random intercepts, we use `(1|B)`, while random intercepts with random slopes can be fitted using `(1 + A|B)`
